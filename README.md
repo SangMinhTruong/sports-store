@@ -1,1 +1,1 @@
-# Sports Store Web Application
+# SportsStore
