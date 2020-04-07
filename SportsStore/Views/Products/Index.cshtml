@@ -1,0 +1,111 @@
+﻿@model ProductIndexViewModel
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<form asp-action="Index" method="get" class="form-inline">
+    Find by name:
+    <input type="text" name="searchString" value="@Model.SearchString" />
+    <input type="submit" value="Search" class="btn btn-default" /> |
+    <div class="dropdown">
+        <button class="btn btn-default dropdown-toggle"
+                type="button" id="categoryDropDown" data-toggle="dropdown"
+                aria-haspopup="true" aria-expanded="false">
+            @Model.Category
+        </button>
+        <div class="dropdown-menu" aria-labelledby="categoryDropDown">
+            <a asp-action="Index"
+                asp-route-sortOrder="@Model.SortOrder"
+                asp-route-category=""
+                asp-route-searchString="@Model.SearchString"
+                class="dropdown-item">
+                All
+            </a>
+            @foreach (var category in Model.Categories)
+            {
+                <a asp-action="Index"
+                    asp-route-sortOrder="@Model.SortOrder"
+                    asp-route-category="@category"
+                    asp-route-searchString="@Model.SearchString"
+                    class="dropdown-item">
+                    @category
+                </a>
+            }
+        </div>
+    </div> | 
+    <a asp-action="Index" class="btn btn-default">Reset</a>
+</form>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                <a asp-action="Index" 
+                   asp-route-sortOrder="@ViewData["NameSortParm"]"
+                   asp-route-searchString="@Model.SearchString">Name</a>
+            </th>
+            <th>
+                Brand
+            </th>
+            <th>
+                Category
+            </th>
+            <th>
+                <a asp-action="Index" 
+                   asp-route-sortOrder="@ViewData["PriceSortParm"]"
+                   asp-route-searchString="@Model.SearchString">Price</a>
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.Products)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Brand)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Category)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Price)
+                </td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.ID">Edit</a> |
+                    <a asp-action="Details" asp-route-id="@item.ID">Details</a> |
+                    <a asp-action="Delete" asp-route-id="@item.ID">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@{
+    var prevDisabled = !Model.Products.HasPreviousPage ? "disabled" : "";
+    var nextDisabled = !Model.Products.HasNextPage ? "disabled" : "";
+}
+
+<a asp-action="Index"
+   asp-route-sortOrder="@Model.SortOrder"
+   asp-route-pageNumber="@(Model.Products.PageIndex - 1)"
+   asp-route-searchString="@Model.SearchString"
+   class="btn btn-primary @prevDisabled">
+    Previous
+</a>
+<a asp-action="Index"
+   asp-route-sortOrder="@Model.SortOrder"
+   asp-route-pageNumber="@(Model.Products.PageIndex + 1)"
+   asp-route-searchString="@Model.SearchString"
+   class="btn btn-primary @nextDisabled">
+    Next
+</a>

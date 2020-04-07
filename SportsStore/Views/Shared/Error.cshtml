@@ -1,4 +1,4 @@
-﻿@model ErrorViewModel
+﻿@model SportsStore.Models.ViewModels.ErrorViewModel
 @{
     ViewData["Title"] = "Error";
 }
@@ -13,10 +13,17 @@
     </p>
 }
 
-<h3>Development Mode</h3>
-<p>
-    Swapping to <strong>Development</strong> environment will display more detailed information about the error that occurred.
-</p>
-<p>
-    <strong>Development environment should not be enabled in deployed applications</strong>, as it can result in sensitive information from exceptions being displayed to end users. For local debugging, development environment can be enabled by setting the <strong>ASPNETCORE_ENVIRONMENT</strong> environment variable to <strong>Development</strong>, and restarting the application.
-</p>
+@if (@Model.ErrorTitle != null)
+{
+    <h3>Error Information: @Model.ErrorTitle</h3>
+    <p><strong>
+        @Model.ErrorMessage
+    </strong></p>
+}
+else
+{
+    <h3>An Unexpected Error occured</h3>
+    <p>
+        Please contact the development team for more info.
+    </p>
+}

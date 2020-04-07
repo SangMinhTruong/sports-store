@@ -1,0 +1,60 @@
+﻿@model IEnumerable<ProductItem>
+@{
+    ViewData["Title"] = "Cart Index";
+}
+<h3>Cart Index</h3>
+<table class="table">
+</table>
+<table class="table">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Price</th>
+            <th>Quantity</th>
+            <th>Sub Total</th>
+            <th>Remove</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model.Any())
+        {
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(model => item.Product.ID)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(model => item.Product.Name)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(model => item.Product.Price)
+                    </td>
+                    <td>@item.Quantity</td>
+                    <td>@(item.Product.Price * item.Quantity)</td>
+                    <td>
+                        <a asp-controller="Customers"
+                           asp-action="RemoveFromCart"
+                           asp-route-id="@item.Product.ID"
+                           asp-route-returnUrl="@ViewBag.ReturnUrl">Remove</a>
+                    </td>
+                </tr>
+            }
+            <tr>
+                <td align="right" colspan="6">Sum</td>
+                <td>
+                    @ViewBag.Total
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<a asp-controller="Customers"
+   asp-action="Checkout"
+   class="btn btn-primary">Checkout</a>
+
+<a asp-controller="Customers"
+   asp-action="ContinueShopping"
+   asp-route-returnUrl="@ViewBag.ReturnUrl">Continue Shopping</a>

@@ -1,36 +1,155 @@
-﻿
-<!DOCTYPE html>
-<html>
+﻿<!DOCTYPE html>
+<html lang="en">
 <head>
-    <link href="~/lib/bootstrap/css/bootstrap.css" rel="stylesheet" />
-    <link href="~/lib/bootstrap/css/bootstrap-grid.css" rel="stylesheet" />
-    <script src="~/lib/jquery/core.js"></script>
-    <script src="~/lib/jquery/jquery.js"></script>
-    <link rel="stylesheet" asp-href-include="/lib/font-awesome/css/*.css" />
-    <title>SportsStore</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Sports Store</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" />
 </head>
 <body>
-    <div class="navbar navbar-dark bg-dark" role="navigation">
-        <div class="container-fluid ">
-            <div class="col-8">
-                <a class="navbar-brand" href="#">SPORTS STORE</a>
+    <header>
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+            <div class="container">
+                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">SportsStore</a>
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+                        aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="navbar-collapse collapse d-sm-inline-flex flex-sm-row-reverse">
+                    <ul class="navbar-nav flex-grow-0">
+                        @*If the user is signed-in display Logout link*@
+                        @if (SignInManager.IsSignedIn(User))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark"
+                                   asp-controller="Home"
+                                   asp-action="Index">
+                                    @User.Identity.Name
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <form method="post" asp-controller="Accounts" asp-action="Logout">
+                                    <button type="submit"
+                                            class="btn nav-link text-dark">
+                                        Logout
+                                    </button>
+                                </form>
+                            </li>
+                        }
+                        else
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Accounts" asp-action="Register">
+                                    Register
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Accounts" asp-action="Login">
+                                    Login
+                                </a>
+                            </li>
+                        }
+                    </ul>
+                    <ul class="navbar-nav flex-grow-1">
+                        @if ((await authorizationService.AuthorizeAsync(User, "CustomerPolicy")).Succeeded)
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area=""
+                                   asp-controller="Home"
+                                   asp-action="Index">
+                                    Home
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area=""
+                                   asp-controller="Home"
+                                   asp-action="Privacy">
+                                    Privacy
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area=""
+                                   asp-controller="Home"
+                                   asp-action="About">
+                                    About
+                                </a>
+                            </li>
+                        }
+                        @if ((await authorizationService.AuthorizeAsync(User, "EmployeePolicy")).Succeeded)
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area=""
+                                   asp-controller="Products"
+                                   asp-action="Index">
+                                    Products
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark"
+                                   asp-area=""
+                                   asp-controller="Orders"
+                                   asp-action="Index">
+                                    Orders
+                                </a>
+                            </li>
+                        }
+                        @if ((await authorizationService.AuthorizeAsync(User, "AdminPolicy")).Succeeded)
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark"
+                                   asp-area=""
+                                   asp-controller="Imports"
+                                   asp-action="Index">
+                                    Imports
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area=""
+                                   asp-controller="Employees"
+                                   asp-action="Index">
+                                    Employees
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area=""
+                                   asp-controller="Reports"
+                                   asp-action="Index">
+                                    Reports
+                                </a>
+                            </li>
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink"
+                                   data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                    Admin
+                                </a>
+                                <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                                    <a class="dropdown-item" asp-controller="Administration"
+                                       asp-action="ListUsers">Users</a>
+                                    <a class="dropdown-item" asp-controller="Administration"
+                                       asp-action="ListRoles">Roles</a>
+                                </div>
+                            </li>
+                        }
+                    </ul>
+                </div>
             </div>
-            <div class="col text-right">
-                @await Component.InvokeAsync("CartSummary")
-            </div>
-            <div class="col-auto text-right">
-                <a class="btn btn-sm btn-primary"
-                   asp-action="Login" asp-controller="Product">Admin Login</a>
-            </div>
-        </div>
-    </div>
-    <div class="row m-1 p-1">
-        <div id="categories" class="col-3">
-            @await Component.InvokeAsync("NavigationMenu")
-        </div>
-        <div class="col-9">
+        </nav>
+    </header>
+    <div class="container">
+        <main role="main" class="pb-3">
             @RenderBody()
-        </div>
+        </main>
     </div>
+
+    <footer class="border-top footer text-muted">
+        <div class="container">
+            &copy; 2020 - Sports Store - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+        </div>
+    </footer>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @RenderSection("Scripts", required: false)
 </body>
 </html>

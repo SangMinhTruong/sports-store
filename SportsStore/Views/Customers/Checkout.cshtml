@@ -1,0 +1,95 @@
+﻿@model CheckoutViewModel
+
+@{
+    ViewData["Title"] = "Checkout";
+}
+
+<h1>Create</h1>
+
+<h4>Order</h4>
+<hr />
+<div class="row">
+    <div class="col-md-8">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <form asp-action="Checkout"
+              method="post">
+            <div class="form-group">
+                <label asp-for="@Model.RecipientName" class="control-label">Recipient Name</label>
+                <input asp-for="@Model.RecipientName" class="form-control" />
+                <span asp-validation-for="@Model.RecipientName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="@Model.RecipientAddress" class="control-label">Recipient Address</label>
+                <input asp-for="@Model.RecipientAddress" class="form-control" />
+                <span asp-validation-for="@Model.RecipientAddress" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="@Model.RecipientPhone" class="control-label">Recipient Phone</label>
+                <input asp-for="@Model.RecipientPhone" class="form-control" />
+                <span asp-validation-for="@Model.RecipientPhone" class="text-danger"></span>
+            </div>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>
+                            Name
+                        </th>
+                        <th>
+                            Brand
+                        </th>
+                        <th>
+                            Category
+                        </th>
+                        <th>
+                            Price
+                        </th>
+                        <th>
+                            Quantity
+                        </th>
+                        <th>
+                            Sub Total
+                        </th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.OrderedProducts)
+                    {
+                        <tr>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Product.Name)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Product.Brand)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Product.Category)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Product.Price)
+                            </td>
+                            <td>
+                                @item.Quantity
+                            </td>
+                            <td>
+                                @(item.Product.Price * item.Quantity)
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="CartIndex"
+       asp-controller="Customers">Back to Cart</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
