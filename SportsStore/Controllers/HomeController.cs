@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -17,20 +18,33 @@ namespace SportsStore.Controllers
     {
         private readonly ILogger<HomeController> _logger;
         private readonly StoreDbContext _context;
+        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly SignInManager<ApplicationUser> _signInManager;
+
         public HomeController(ILogger<HomeController> logger, 
-            StoreDbContext context)
+            StoreDbContext context,
+            UserManager<ApplicationUser> userManager,
+            SignInManager<ApplicationUser> signInManager)
         {
+            
             _logger = logger;
             _context = context;
+            _userManager = userManager;
+            _signInManager = signInManager;
         }
-        [Authorize(Policy = "CustomerPolicy")]
         public async Task<IActionResult> Index(
             string sortOrder,
             string category,
             string searchString,
             int? pageNumber)
         {
-            // Use LINQ to get list of genres.
+            if (_signInManager.IsSignedIn(User))
+            {
+                if (User.IsInRole("Admin") || User.IsInRole("Employee"))
+                    return RedirectToAction("Index", "Home", new { area = "Employee" } );
+            }
+
+            // Use LINQ to get list of genres.  
             IQueryable<string> categoryQuery = from p in _context.Products
                                                orderby p.Category
                                                select p.Category;
@@ -88,6 +102,11 @@ namespace SportsStore.Controllers
         }
 
         public IActionResult Privacy()
+        {
+            return View();
+        }
+
+        public IActionResult About()
         {
             return View();
         }

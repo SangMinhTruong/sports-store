@@ -1,0 +1,12 @@
+﻿@using SportsStore
+@using SportsStore.Models
+@using SportsStore.Models.ViewModels
+@using SportsStore.Areas.Employee.Models
+@using SportsStore.Areas.Employee.Models.ViewModels
+@using Microsoft.AspNetCore.Identity
+@using Microsoft.AspNetCore.Authorization
+
+@inject IAuthorizationService authorizationService
+@inject SignInManager<ApplicationUser> SignInManager
+
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers

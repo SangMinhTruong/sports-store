@@ -33,8 +33,6 @@ namespace SportsStore.Controllers
                 // Copy data from RegisterViewModel to ApplicationUser
                 var user = new Customer
                 {
-                    FirstName = model.FirstName,
-                    LastName = model.LastName,
                     UserName = model.Email,
                     Email = model.Email
                 };
@@ -46,8 +44,11 @@ namespace SportsStore.Controllers
                 // SignInManager and redirect to index action of HomeController
                 if (result.Succeeded)
                 {
-                    if (signInManager.IsSignedIn(User) && User.IsInRole("Admin"))
-                        return RedirectToAction("ListUsers", "Administration");
+                    if (signInManager.IsSignedIn(User) && 
+                        (User.IsInRole("Admin") || User.IsInRole("Employee")))
+                    {
+                        return RedirectToAction("Index", "Home", new { area = "Employee" });
+                    }
 
                     await signInManager.SignInAsync(user, isPersistent: false);
                     return RedirectToAction("Index", "Home");
@@ -78,6 +79,12 @@ namespace SportsStore.Controllers
 
                 if (result.Succeeded)
                 {
+                    var user = await userManager.FindByEmailAsync(model.Email);
+                    if (await userManager.IsInRoleAsync(user, "Admin") ||
+                        await userManager.IsInRoleAsync(user, "Employee"))
+                    {
+                        return RedirectToAction("Index", "Home", new { area = "Employee" });
+                    }
                     if (Url.IsLocalUrl(returnUrl))
                     {
                         return Redirect(returnUrl);

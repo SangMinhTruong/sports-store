@@ -1,0 +1,29 @@
+﻿@model SportsStore.Models.ViewModels.ErrorViewModel
+@{
+    ViewData["Title"] = "Error";
+}
+
+<h1 class="text-danger">Error.</h1>
+<h2 class="text-danger">An error occurred while processing your request.</h2>
+
+@if (Model.ShowRequestId)
+{
+    <p>
+        <strong>Request ID:</strong> <code>@Model.RequestId</code>
+    </p>
+}
+
+@if (@Model.ErrorTitle != null)
+{
+    <h3>Error Information: @Model.ErrorTitle</h3>
+    <p><strong>
+        @Model.ErrorMessage
+    </strong></p>
+}
+else
+{
+    <h3>An Unexpected Error occured</h3>
+    <p>
+        Please contact the development team for more info.
+    </p>
+}

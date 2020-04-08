@@ -13,6 +13,8 @@
     <Compile Remove="Migrations\20200407061443_AddOrderCustomerRelationship.Designer.cs" />
     <Compile Remove="Migrations\20200407062530_AddOrderCustomerRelationship.cs" />
     <Compile Remove="Migrations\20200407062530_AddOrderCustomerRelationship.Designer.cs" />
+    <Compile Remove="Migrations\20200407062814_AddOrderCustomerRelationship.cs" />
+    <Compile Remove="Migrations\20200407062814_AddOrderCustomerRelationship.Designer.cs" />
   </ItemGroup>
 
   <ItemGroup>
@@ -26,6 +28,10 @@
     </PackageReference>
     <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="3.1.3" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="3.1.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Areas\Employee\Data\" />
   </ItemGroup>
 
 </Project>

@@ -10,17 +10,6 @@ namespace SportsStore.Models.ViewModels
         [Remote(action: "IsEmailInUse", controller: "Accounts")]
         public string Email { get; set; }
         [Required]
-        [StringLength(50)]
-        [RegularExpression(@"^[A-Z]+[a-zA-Z""'\s-]*$")]
-        [Display(Name = "First Name")]
-        public string FirstName { get; set; }
-
-        [Required]
-        [StringLength(50)]
-        [RegularExpression(@"^[A-Z]+[a-zA-Z""'\s-]*$")]
-        [Display(Name = "LastName")]
-        public string LastName { get; set; }
-        [Required]
         [DataType(DataType.Password)]
         public string Password { get; set; }
 

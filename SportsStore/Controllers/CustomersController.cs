@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SportsStore.Data;
@@ -16,10 +17,20 @@ namespace SportsStore.Controllers
     public class CustomersController : Controller
     {
         private readonly StoreDbContext _context;
+        // Identity services
+        private readonly UserManager<ApplicationUser> userManager;
+        private readonly SignInManager<ApplicationUser> signInManager;
+        private IOrderRepository _orderRepository;
 
-        public CustomersController(StoreDbContext context)
+        public CustomersController(StoreDbContext context,
+            UserManager<ApplicationUser> userManager,
+            SignInManager<ApplicationUser> signInManager,
+            IOrderRepository orderRepository)
         {
             this._context = context;
+            this.userManager = userManager;
+            this.signInManager = signInManager;
+            this._orderRepository = orderRepository;
         }
         public IActionResult Index()
         {
@@ -95,32 +106,101 @@ namespace SportsStore.Controllers
             }
         }
         [HttpGet]
-        public IActionResult Checkout()
+        public async Task<IActionResult> Checkout()
         {
             var productsQuery = _context.Products; 
             var cart = SessionHelper.GetObjectFromJson<List<ProductItem>>(HttpContext.Session, "cart");
-            if (cart == null)
+            if (cart == null || !cart.Any())
             {
                 return RedirectToAction("Error", "Home");
             }
-
+            Customer customer = null;
+            if (signInManager.IsSignedIn(User))
+            {
+                customer = await _context.Customers.FindAsync(userManager.GetUserId(User));
+            }
             var model = new CheckoutViewModel
             {
-                OrderedProducts = cart
+                OrderedProducts = cart,
+                CustomerId = customer?.Id ?? "",
+                RecipientName = customer?.FullName ?? "",
+                RecipientAddress = customer?.Address ?? "",
+                RecipientPhone = customer?.PhoneNumber ?? "",
             };
             return View(model);
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Checkout(
-            [Bind("PlacementDate, RecipientName, RecipientAddress, RecipientPhone")]
-            CheckoutViewModel model)
+        public async Task<IActionResult> Checkout(CheckoutViewModel model)
         {
             if (ModelState.IsValid)
             {
+                try
+                {
+                    var cart = SessionHelper.GetObjectFromJson<List<ProductItem>>(HttpContext.Session, "cart");
 
+                    Order order = new Order()
+                    {
+                        PlacementDate = model.PlacementDate ?? DateTime.MinValue,
+                        Customer = await _context.Customers.FindAsync(model.CustomerId),
+                        RecipientName = model.RecipientName,
+                        RecipientAddress = model.RecipientAddress,
+                        RecipientPhone = model.RecipientPhone,
+                    };
+                    await _orderRepository.Create(order, cart);
+
+                    return RedirectToAction("Index", "Home");
+                }
+                catch(Exception)
+                {
+                    return RedirectToAction("Error", "Home");
+                }
             }
             return View(model);
+        }
+        public async Task<IActionResult> Details(string id)
+        {
+            var users = _context.Customers
+                            .Include(c => c.Orders)
+                            .ThenInclude(o => o.OrderedProducts)
+                                .ThenInclude(op => op.Product);
+            var user = await users.FirstOrDefaultAsync(c => c.Id == id);
+            return View(user);
+        }
+        [HttpPost, ActionName("Details")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DetailsPost(string id)
+        {
+            if (string.IsNullOrEmpty(id))
+                return NotFound();
+            var customers = _context.Customers
+                                   .Include(c => c.Orders)
+                                   .ThenInclude(o => o.OrderedProducts)
+                                       .ThenInclude(op => op.Product);
+            var customerToUpdate = await customers.FirstOrDefaultAsync(c => c.Id == id);
+            if (await TryUpdateModelAsync<Customer>(
+                       customerToUpdate,
+                       "",
+                       c => c.FirstName,
+                       c => c.LastName,
+                       c => c.Address,
+                       c => c.PhoneNumber
+                   ))
+            {
+                try
+                {
+                    await _context.SaveChangesAsync();
+                    ViewBag.SuccessMessage = "Saved changes successfully.";
+                }
+                catch (DbUpdateException /* ex */)
+                {
+                    //Log the error (uncomment ex variable name and write a log.)
+                    ModelState.AddModelError("", "Unable to save changes. " +
+                        "Try again, and if the problem persists, " +
+                        "see your system administrator.");
+                }
+            }
+            return View(customerToUpdate);
         }
     }
 }

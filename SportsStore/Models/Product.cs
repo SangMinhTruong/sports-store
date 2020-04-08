@@ -30,7 +30,6 @@ namespace SportsStore.Models
         [DisplayFormat(DataFormatString = "{0:N0}", ApplyFormatInEditMode = true)]
         public decimal Price { get; set; }
 
-        [Range(1000, Double.MaxValue)]
         [DataType(DataType.Currency)]
         [Column(TypeName = "decimal(18, 2)")]
         [DisplayFormat(DataFormatString = "{0:N0}", ApplyFormatInEditMode = true)]

@@ -46,7 +46,7 @@ namespace SportsStore.Data
                     .WithMany(c => c.Orders)
                 .HasForeignKey(c => c.CustomerID)
                 .IsRequired(false)
-                .OnDelete(DeleteBehavior.Cascade);
+                .OnDelete(DeleteBehavior.SetNull);
         }
     }
 }

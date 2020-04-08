@@ -11,7 +11,20 @@
     <header>
         <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
             <div class="container">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">SportsStore</a>
+                @if ((await authorizationService.AuthorizeAsync(User, "CustomerPolicy")).Succeeded)
+                {
+                    <a class="navbar-brand"
+                       asp-area=""
+                       asp-controller="Home"
+                       asp-action="Index">SportsStore</a>
+                }
+                else
+                {
+                    <a class="navbar-brand"
+                       asp-area="Employee"
+                       asp-controller="Home"
+                       asp-action="EmployeeIndex">SportsStore Staff</a>
+                }
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
                         aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
@@ -23,8 +36,9 @@
                         {
                             <li class="nav-item">
                                 <a class="nav-link text-dark"
-                                   asp-controller="Home"
-                                   asp-action="Index">
+                                   asp-controller="Customers"
+                                   asp-action="Details"
+                                   asp-route-id="@SignInManager.UserManager.GetUserId(User)">
                                     @User.Identity.Name
                                 </a>
                             </li>
@@ -40,7 +54,9 @@
                         else
                         {
                             <li class="nav-item">
-                                <a class="nav-link" asp-controller="Accounts" asp-action="Register">
+                                <a class="nav-link" 
+                                   asp-controller="Accounts" 
+                                   asp-action="Register">
                                     Register
                                 </a>
                             </li>
@@ -55,7 +71,8 @@
                         @if ((await authorizationService.AuthorizeAsync(User, "CustomerPolicy")).Succeeded)
                         {
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area=""
+                                <a class="nav-link text-dark" 
+                                   asp-area=""
                                    asp-controller="Home"
                                    asp-action="Index">
                                     Home
@@ -79,7 +96,8 @@
                         @if ((await authorizationService.AuthorizeAsync(User, "EmployeePolicy")).Succeeded)
                         {
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area=""
+                                <a class="nav-link text-dark"
+                                   asp-area="Employee"
                                    asp-controller="Products"
                                    asp-action="Index">
                                     Products
@@ -87,7 +105,7 @@
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link text-dark"
-                                   asp-area=""
+                                   asp-area="Employee"
                                    asp-controller="Orders"
                                    asp-action="Index">
                                     Orders
@@ -98,21 +116,23 @@
                         {
                             <li class="nav-item">
                                 <a class="nav-link text-dark"
-                                   asp-area=""
+                                   asp-area="Employee"
                                    asp-controller="Imports"
                                    asp-action="Index">
                                     Imports
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area=""
+                                <a class="nav-link text-dark"
+                                   asp-area="Employee"
                                    asp-controller="Employees"
                                    asp-action="Index">
                                     Employees
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area=""
+                                <a class="nav-link text-dark"
+                                   asp-area="Employee"
                                    asp-controller="Reports"
                                    asp-action="Index">
                                     Reports
@@ -124,9 +144,13 @@
                                     Admin
                                 </a>
                                 <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-                                    <a class="dropdown-item" asp-controller="Administration"
+                                    <a class="dropdown-item"
+                                       asp-area="Employee" 
+                                       asp-controller="Administration"
                                        asp-action="ListUsers">Users</a>
-                                    <a class="dropdown-item" asp-controller="Administration"
+                                    <a class="dropdown-item"
+                                       asp-area="Employee" 
+                                       asp-controller="Administration"
                                        asp-action="ListRoles">Roles</a>
                                 </div>
                             </li>
