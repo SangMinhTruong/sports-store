@@ -6,9 +6,12 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using ReflectionIT.Mvc.Paging;
 using SportsStore.Data;
+using SportsStore.Helpers;
 using SportsStore.Models;
 using SportsStore.Models.ViewModels;
 
@@ -32,73 +35,15 @@ namespace SportsStore.Controllers
             _userManager = userManager;
             _signInManager = signInManager;
         }
-        public async Task<IActionResult> Index(
-            string sortOrder,
-            string category,
-            string searchString,
-            int? pageNumber)
+        public IActionResult Index()
         {
             if (_signInManager.IsSignedIn(User))
             {
                 if (User.IsInRole("Admin") || User.IsInRole("Employee"))
                     return RedirectToAction("Index", "Home", new { area = "Employee" } );
             }
-
-            // Use LINQ to get list of genres.  
-            IQueryable<string> categoryQuery = from p in _context.Products
-                                               orderby p.Category
-                                               select p.Category;
-
-            var products = from p in _context.Products
-                           select p;
-
-            if (!string.IsNullOrEmpty(searchString))
-            {
-                products = products.Where(p => p.Name.Contains(searchString) ||
-                                               p.Brand.Contains(searchString));
-            }
-
-            if (!string.IsNullOrEmpty(category))
-            {
-                products = products.Where(x => x.Category == category);
-            }
-
-            //if (searchString != null)
-            //{
-            //    pageNumber = 1;
-            //}
-
-            ViewData["NameSortParm"] = String.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
-            ViewData["PriceSortParm"] = sortOrder == "price_asc" ? "price_desc" : "price_asc";
-            switch (sortOrder)
-            {
-                case "name_desc":
-                    products = products.OrderByDescending(s => s.Name);
-                    break;
-                case "price_asc":
-                    products = products.OrderBy(s => s.Price);
-                    break;
-                case "price_desc":
-                    products = products.OrderByDescending(s => s.Price);
-                    break;
-                default:
-                    products = products.OrderBy(s => s.Name);
-                    break;
-            }
-            int pageSize = 3;
-            var model = new ProductIndexViewModel()
-            {
-                Products = await PaginatedList<Product>
-                                .CreateAsync(products.AsNoTracking(),
-                                             pageNumber ?? 1,
-                                             pageSize),
-                Category = !string.IsNullOrEmpty(category) ? category : "All",
-                SearchString = searchString,
-                SortOrder = sortOrder,
-                Categories = await categoryQuery.Distinct().ToListAsync()
-            };
-            ViewBag.returnUrl = HttpContext.Request.Path + HttpContext.Request.QueryString;
-            return View(model);
+            ViewBag.IsExpanded = true;
+            return View();
         }
 
         public IActionResult Privacy()

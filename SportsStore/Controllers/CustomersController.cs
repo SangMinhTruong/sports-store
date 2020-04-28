@@ -50,9 +50,10 @@ namespace SportsStore.Controllers
             ViewBag.ReturnUrl = returnUrl;
             return View(cart);
         }
-        public async Task<IActionResult> AddToCart(int id, string returnUrl)
+        public async Task<IActionResult> AddToCart(int id, string returnUrl, int? quantity)
         {
             var productsQuery = _context.Products;
+        
             if (SessionHelper
                 .GetObjectFromJson<List<ProductItem>>(HttpContext.Session, "cart") == null)
             {
@@ -60,7 +61,7 @@ namespace SportsStore.Controllers
                 cart.Add(new ProductItem
                 {
                     Product = await productsQuery.FindAsync(id),
-                    Quantity = 1
+                    Quantity = quantity ?? 1
                 });
                 SessionHelper.SetObjectAsJson(HttpContext.Session, "cart", cart);
             }
@@ -70,11 +71,21 @@ namespace SportsStore.Controllers
                     .GetObjectFromJson<List<ProductItem>>(HttpContext.Session, "cart");
                 if (cart.Any(i => i.Product.ID == id) == true)
                 {
-                    cart.Find(i => i.Product.ID == id).Quantity++;
+                    var productToAdd = await productsQuery.FindAsync(id);
+                    var itemToAdd = cart.Find(i => i.Product.ID == id);
+                    if (productToAdd.Stock > itemToAdd.Quantity)
+                        itemToAdd.Quantity += quantity ?? 1;
+                    else
+                    {
+                        IList<string> errorList = new List<string>();
+                        errorList.Add("Maximum number of products.");
+                        TempData.Put("Error", errorList);
+                        return RedirectToAction("Index", "Home");
+                    }
                 }
                 else
                 {
-                    cart.Add(new ProductItem { Product = await productsQuery.FindAsync(id), Quantity = 1 });
+                    cart.Add(new ProductItem { Product = await productsQuery.FindAsync(id), Quantity = quantity ?? 1});
                 }
                 SessionHelper.SetObjectAsJson(HttpContext.Session, "cart", cart);
             }
@@ -112,7 +123,11 @@ namespace SportsStore.Controllers
             var cart = SessionHelper.GetObjectFromJson<List<ProductItem>>(HttpContext.Session, "cart");
             if (cart == null || !cart.Any())
             {
-                return RedirectToAction("Error", "Home");
+                return RedirectToAction("Error", "Home", new 
+                { 
+                    ErrorTitle = "Empty Cart", 
+                    ErrorMessage = "You cannot checkout with an empty cart."
+                });
             }
             Customer customer = null;
             if (signInManager.IsSignedIn(User))
@@ -138,7 +153,7 @@ namespace SportsStore.Controllers
                 try
                 {
                     var cart = SessionHelper.GetObjectFromJson<List<ProductItem>>(HttpContext.Session, "cart");
-
+              
                     Order order = new Order()
                     {
                         PlacementDate = model.PlacementDate ?? DateTime.MinValue,
@@ -147,8 +162,11 @@ namespace SportsStore.Controllers
                         RecipientAddress = model.RecipientAddress,
                         RecipientPhone = model.RecipientPhone,
                     };
-                    await _orderRepository.Create(order, cart);
-
+                    var orderReturn = await _orderRepository.Create(order, cart);
+                    if (orderReturn != null)
+                    {
+                        SessionHelper.SetObjectAsJson(HttpContext.Session, "cart", null);
+                    }
                     return RedirectToAction("Index", "Home");
                 }
                 catch(Exception)
@@ -157,6 +175,27 @@ namespace SportsStore.Controllers
                 }
             }
             return View(model);
+        }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> UpdateCart(IEnumerable<ProductItem> model, string returnUrl)
+        {
+            var productQuery = _context.Products;
+            List<ProductItem> newCart = new List<ProductItem>();
+            foreach (var product in model)
+            {
+                if (product.Product.ID != null)
+                {
+                    newCart.Add(new ProductItem
+                    {
+                        Product = await productQuery.FirstOrDefaultAsync(p => p.ID == product.Product.ID),
+                        Quantity = product.Quantity
+                    });
+                }
+            }
+            SessionHelper.SetObjectAsJson(HttpContext.Session, "cart", newCart);
+
+            return RedirectToAction("CartIndex", "Customers", new { returnUrl });
         }
         public async Task<IActionResult> Details(string id)
         {
@@ -202,5 +241,6 @@ namespace SportsStore.Controllers
             }
             return View(customerToUpdate);
         }
+
     }
 }

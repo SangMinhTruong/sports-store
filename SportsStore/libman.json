@@ -1,0 +1,39 @@
+{
+  "version": "1.0",
+  "defaultProvider": "cdnjs",
+  "libraries": [
+    {
+      "library": "jquery-zoom@1.7.20",
+      "destination": "wwwroot/lib/jquery-zoom/"
+    },
+    {
+      "library": "font-awesome@4.7.0",
+      "destination": "wwwroot/lib/font-awesome/"
+    },
+    {
+      "library": "noUiSlider@10.0.0",
+      "destination": "wwwroot/lib/noUiSlider/"
+    },
+    {
+      "library": "jquery@2.2.4",
+      "destination": "wwwroot/lib/jquery/"
+    },
+    {
+      "library": "twitter-bootstrap@3.3.7",
+      "destination": "wwwroot/lib/bootstrap/"
+    },
+    {
+      "provider": "jsdelivr",
+      "library": "slick-carousel@1.8.0",
+      "destination": "wwwroot/lib/slick-carousel/"
+    },
+    {
+      "library": "masonry@4.2.2",
+      "destination": "wwwroot/lib/masonry/"
+    },
+    {
+      "library": "jquery.imagesloaded@4.1.4",
+      "destination": "wwwroot/lib/jquery.imagesloaded/"
+    }
+  ]
+}

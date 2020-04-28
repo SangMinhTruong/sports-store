@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SportsStore.Data;
 
 namespace SportsStore.Migrations
 {
     [DbContext(typeof(StoreDbContext))]
-    partial class StoreDbContextModelSnapshot : ModelSnapshot
+    [Migration("20200411100248_AddProductStock")]
+    partial class AddProductStock
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -241,22 +243,13 @@ namespace SportsStore.Migrations
 
             modelBuilder.Entity("SportsStore.Models.ImportOrder", b =>
                 {
-                    b.Property<int?>("ID")
+                    b.Property<int>("ID")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<DateTime>("PlacementDate")
                         .HasColumnType("datetime2");
-
-                    b.Property<string>("WholesalerAddress")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("WholesalerName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("WholesalerPhone")
-                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("ID");
 
@@ -265,16 +258,23 @@ namespace SportsStore.Migrations
 
             modelBuilder.Entity("SportsStore.Models.ImportedProduct", b =>
                 {
-                    b.Property<int?>("ImportOrderID")
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int>("ImportOrderID")
                         .HasColumnType("int");
 
-                    b.Property<int?>("ProductID")
+                    b.Property<int>("ProductID")
                         .HasColumnType("int");
 
                     b.Property<int>("Quantity")
                         .HasColumnType("int");
 
-                    b.HasKey("ImportOrderID", "ProductID");
+                    b.HasKey("ID");
+
+                    b.HasIndex("ImportOrderID");
 
                     b.HasIndex("ProductID");
 
@@ -344,9 +344,6 @@ namespace SportsStore.Migrations
                         .HasColumnType("nvarchar(30)")
                         .HasMaxLength(30);
 
-                    b.Property<DateTime>("DateAdded")
-                        .HasColumnType("datetime2");
-
                     b.Property<decimal>("ImportPrice")
                         .HasColumnType("decimal(18, 2)");
 
@@ -364,27 +361,6 @@ namespace SportsStore.Migrations
                     b.HasKey("ID");
 
                     b.ToTable("Product");
-                });
-
-            modelBuilder.Entity("SportsStore.Models.ProductReview", b =>
-                {
-                    b.Property<int?>("OrderID")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("ProductID")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("Rating")
-                        .HasColumnType("int");
-
-                    b.HasKey("OrderID", "ProductID");
-
-                    b.HasIndex("ProductID");
-
-                    b.ToTable("ProductReview");
                 });
 
             modelBuilder.Entity("SportsStore.Models.Customer", b =>
@@ -463,16 +439,16 @@ namespace SportsStore.Migrations
 
             modelBuilder.Entity("SportsStore.Models.ImportedProduct", b =>
                 {
-                    b.HasOne("SportsStore.Models.ImportOrder", "ImportOrder")
+                    b.HasOne("SportsStore.Models.ImportOrder", "Order")
                         .WithMany("ImportedProducts")
                         .HasForeignKey("ImportOrderID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("SportsStore.Models.Product", "Product")
-                        .WithMany("ImportedProducts")
+                        .WithMany()
                         .HasForeignKey("ProductID")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
@@ -496,21 +472,6 @@ namespace SportsStore.Migrations
                         .WithMany("OrderedProducts")
                         .HasForeignKey("ProductID")
                         .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("SportsStore.Models.ProductReview", b =>
-                {
-                    b.HasOne("SportsStore.Models.Order", "Order")
-                        .WithMany("ProductReviews")
-                        .HasForeignKey("OrderID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("SportsStore.Models.Product", "Product")
-                        .WithMany("ProductReviews")
-                        .HasForeignKey("ProductID")
-                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 #pragma warning restore 612, 618

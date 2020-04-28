@@ -4,104 +4,134 @@
     ViewData["Title"] = "Checkout";
 }
 
-<h1>Create</h1>
-
-<h4>Order</h4>
-<hr />
-<div class="row">
-    <div class="col-md-8">
-        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-        <form asp-action="Checkout"
-              method="post">
-            <div class="form-group">
-                <label asp-for="@Model.RecipientName" class="control-label">Recipient Name</label>
-                <input asp-for="@Model.RecipientName"
-                       value="@Model.RecipientName"
-                       class="form-control" />
-                <span asp-validation-for="@Model.RecipientName" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="@Model.RecipientAddress" class="control-label">Recipient Address</label>
-                <input asp-for="@Model.RecipientAddress"
-                       value="@Model.RecipientAddress"
-                       class="form-control" />
-                <span asp-validation-for="@Model.RecipientAddress" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="@Model.RecipientPhone" class="control-label">Recipient Phone</label>
-                <input asp-for="@Model.RecipientPhone"
-                       value="@Model.RecipientPhone"
-                       class="form-control" />
-                <span asp-validation-for="@Model.RecipientPhone" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input asp-for="@Model.PlacementDate"
-                       type="hidden"
-                       value="@DateTime.Now.Date" />
-                <input asp-for="@Model.CustomerId"
-                       type="hidden"
-                       value="@Model.CustomerId" />
-            </div>
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th>
-                            Name
-                        </th>
-                        <th>
-                            Brand
-                        </th>
-                        <th>
-                            Category
-                        </th>
-                        <th>
-                            Price
-                        </th>
-                        <th>
-                            Quantity
-                        </th>
-                        <th>
-                            Sub Total
-                        </th>
-                        <th></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var item in Model.OrderedProducts)
-                    {
-                        <tr>
-                            <td>
-                                @Html.DisplayFor(modelItem => item.Product.Name)
-                            </td>
-                            <td>
-                                @Html.DisplayFor(modelItem => item.Product.Brand)
-                            </td>
-                            <td>
-                                @Html.DisplayFor(modelItem => item.Product.Category)
-                            </td>
-                            <td>
-                                @Html.DisplayFor(modelItem => item.Product.Price)
-                            </td>
-                            <td>
-                                @item.Quantity
-                            </td>
-                            <td>
-                                @(item.Product.Price * item.Quantity)
-                            </td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
-            </div>
-        </form>
+<div id="breadcrumb">
+    <div class="container">
+        <ul class="breadcrumb">
+            <li><a asp-action="Index" asp-controller="Home">Home</a></li>
+            <li><a asp-action="CartIndex" asp-controller="Customers">Cart</a></li>
+            <li class="active">Checkout</li>
+        </ul>
     </div>
 </div>
+<div class="section">
+    <!-- container -->
+    <div class="container">
+        <!-- row -->
+        <div class="row">
+            <form id="checkout-form" class="clearfix" 
+                  asp-action="Checkout" asp-controller="Customers" 
+                  method="post">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <div class="col-md-6">
+                    <div class="billing-details">
+                        @if (!SignInManager.IsSignedIn(User))
+                        {
+                            <p>Already a customer ? <a asp-controller="Accounts" asp-action="Login">Login</a></p>
+                        }
 
-<div>
-    <a asp-action="CartIndex"
-       asp-controller="Customers">Back to Cart</a>
+                        <div class="section-title">
+                            <h3 class="title">Billing Details</h3>
+                        </div>
+
+                        <div class="form-group">
+                            <input class="input" type="text"
+                                   asp-for="@Model.RecipientName" value="@Model.RecipientName"
+                                   placeholder="Full Name">
+                            <span asp-validation-for="@Model.RecipientName" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group">
+                            <input class="input" type="text"
+                                   asp-for="@Model.RecipientAddress" value="@Model.RecipientAddress"
+                                   placeholder="Address">
+                            <span asp-validation-for="@Model.RecipientAddress" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group">
+                            <input class="input" type="text"
+                                   asp-for="@Model.RecipientPhone" value="@Model.RecipientPhone"
+                                   placeholder="Phone">
+                            <span asp-validation-for="@Model.RecipientPhone" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group">
+                            <input asp-for="@Model.PlacementDate"
+                                   type="hidden"
+                                   value="@DateTime.Now.Date" />
+                            <input asp-for="@Model.CustomerId"
+                                   type="hidden"
+                                   value="@Model.CustomerId" />
+                        </div>
+                        <button class="primary-btn" type="reset">Clear</button>
+                    </div>
+                </div>
+
+                <div class="col-md-12">
+                    <div class="order-summary clearfix">
+                        <div class="section-title">
+                            <h3 class="title">Order Review</h3>
+                        </div>
+                        <table class="shopping-cart-table table">
+                            <thead>
+                                <tr>
+                                    <th class="thumb">Product</th>
+                                    <th class="details"></th>
+                                    <th class="price text-center">Price</th>
+                                    <th class="qty text-center">Quantity</th>
+                                    <th class="total text-center">Total</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @for (int i = 0; i < Model.OrderedProducts.Count; i++)
+                                {
+                                    <tr>
+                                        <td class="thumb"><img src="~/images/thumb-product01.jpg" alt=""></td>
+                                        <td class="details">
+                                            <a asp-action="Details" asp-controller="Products"
+                                               asp-route-id="@Model.OrderedProducts[i].Product.ID">@Model.OrderedProducts[i].Product.Name</a>
+                                            <ul>
+                                                <li><span>Brand: @Model.OrderedProducts[i].Product.Brand</span></li>
+                                            </ul>
+                                        </td>
+                                        <td class="price text-center"><strong>@Model.OrderedProducts[i].Product.Price</strong></td>
+                                        <td class="qty text-center">
+                                            <strong>@Model.OrderedProducts[i].Quantity</strong>
+                                        <td class="total text-center"><strong class="primary-color">@(Model.OrderedProducts[i].Product.Price * Model.OrderedProducts[i].Quantity)</strong></td>
+                                    </tr>
+                                }
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <th class="empty" colspan="3"></th>
+                                    <th>SUBTOTAL</th>
+                                    <th colspan="2" class="sub-total">@Model.OrderedProducts.Sum(p => p.Quantity * p.Product.Price)</th>
+                                </tr>
+                                <tr>
+                                    <th class="empty" colspan="3"></th>
+                                    <th>SHIPING</th>
+                                    <td colspan="2">Free Shipping</td>
+                                </tr>
+                                <tr>
+                                    <th class="empty" colspan="3"></th>
+                                    <th>TOTAL</th>
+                                    <th colspan="2" class="total">@Model.OrderedProducts.Sum(p => p.Quantity * p.Product.Price)</th>
+                                </tr>
+                            </tfoot>
+                        </table>
+                        <div class="pull-right">
+                            <a class="primary-btn" style="margin-right: 5px;"
+                               asp-action="CartIndex"
+                               asp-controller="Customers">Back to Cart</a>
+                            <button class="primary-btn" type="submit">Place Order</button>
+                        </div>
+                    </div>
+
+                </div>
+            </form>
+        </div>
+        <!-- /row -->
+    </div>
+    <!-- /container -->
 </div>
 
 @section Scripts {

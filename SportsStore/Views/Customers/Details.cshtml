@@ -1,93 +1,115 @@
 ﻿@model SportsStore.Models.Customer
 
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = "Customer Details";
 }
 
-<h1>Details</h1>
-
-<div>
-    <form method="post">
-        @if (ViewBag.SuccessMessage != null)
-        {
-            <div class="alert alert-success alert-dismissible fade show" role="alert">
-                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-                @ViewBag.SuccessMessage
-            </div>
-        }
-        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-        <div class="form-group">
-            <label asp-for="Id">ID</label>
-            <input asp-for="Id" value="@Model.Id"
-                   class="form-control col-8" readonly />
-        </div>
-        <div class="row">
-            <div class="form-group col-4">
-                <label asp-for="FirstName">First Name</label>
-                <input asp-for="FirstName" value="@Model.FirstName"
-                       class="form-control mb-2 mr-sm-2" />
-                <span asp-validation-for="FirstName" class="text-danger"></span>
-            </div>
-            <div class="form-group col-4">
-                <label asp-for="LastName">Last Name</label>
-                <input asp-for="LastName" value="@Model.LastName"
-                       class="form-control mb-2 mr-sm-2" />
-                <span asp-validation-for="LastName" class="text-danger"></span>
-            </div>
-        </div>
-        <div class="form-group">
-            <label asp-for="Email">Email</label>
-            <input asp-for="Email" value="@Model.Email"
-                   class="form-control col-8" readonly />
-        </div>
-        <div class="form-group">
-            <label asp-for="Address">Address</label>
-            <input asp-for="Address" value="@Model.Address"
-                   class="form-control col-8" />
-            <span asp-validation-for="Address" class="text-danger"></span>
-        </div>
-        <div class="form-group">
-            <label asp-for="PhoneNumber">Phone Number</label>
-            <input asp-for="PhoneNumber" value="@Model.PhoneNumber"
-                   class="form-control col-8" />
-            <span asp-validation-for="PhoneNumber" class="text-danger"></span>
-        </div>
-
-        <h3>@Html.DisplayNameFor(model => model.Orders)</h3>
-        <table class="table">
-            <tr>
-                <th>
-                    @Html.DisplayNameFor(model => model.Orders.ElementAt(0).ID)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.Orders.ElementAt(0).PlacementDate)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.Orders.ElementAt(0).Total)
-                </th>
-            </tr>
-            @foreach (var item in Model.Orders)
-            {
-                <tr>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.ID)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.PlacementDate)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.Total)
-                    </td>
-                </tr>
-            }
-        </table>
-        <div class="form-inline">
-            <button type="submit" class="btn btn-primary mr-sm-1">Update</button>
-            <a asp-controller="Home" asp-action="Index" class="btn btn-primary">Cancel</a>
-        </div>
-    </form>
+<!-- BREADCRUMB -->
+<div id="breadcrumb">
+    <div class="container">
+        <ul class="breadcrumb">
+            <li><a asp-action="Index" asp-controller="Home">Home</a></li>
+            <li class="active">Customer Details</li>
+        </ul>
+    </div>
 </div>
 
-
+<!-- section -->
+<div class="section">
+    <!-- container -->
+    <div class="container">
+        <!-- row -->
+        <div class="row">
+            <form method="post">
+                <div class="col-md-12">
+                    <div class="section-title">
+                        <h3 class="title">Account Details</h3>
+                    </div>
+                    @if (ViewBag.SuccessMessage != null)
+                    {
+                        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                            @ViewBag.SuccessMessage
+                        </div>
+                    }
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                    <div class="form-group">
+                        <label asp-for="Id">ID</label>
+                        <input asp-for="Id" value="@Model.Id"
+                               class="input col-8" readonly />
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="FirstName">First Name</label>
+                        <input asp-for="FirstName" value="@Model.FirstName"
+                               class="input mb-2 mr-sm-2" />
+                        <span asp-validation-for="FirstName" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="LastName">Last Name</label>
+                        <input asp-for="LastName" value="@Model.LastName"
+                               class="input mb-2 mr-sm-2" />
+                        <span asp-validation-for="LastName" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="Email">Email</label>
+                        <input asp-for="Email" value="@Model.Email"
+                               class="input col-8" readonly />
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="Address">Address</label>
+                        <input asp-for="Address" value="@Model.Address"
+                               class="input col-8" />
+                        <span asp-validation-for="Address" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="PhoneNumber">Phone Number</label>
+                        <input asp-for="PhoneNumber" value="@Model.PhoneNumber"
+                               class="input col-8" />
+                        <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+                    </div>
+                    <div class="form-inline">
+                        <button type="submit" class="primary-btn">Update</button>
+                        <a asp-controller="Home" asp-action="Index" class="primary-btn">Cancel</a>
+                    </div>
+                </div>
+            </form>
+            <div class="col-md-12">
+                <div class="section-title">
+                    <h3 class="title">@Html.DisplayNameFor(model => model.Orders)</h3>
+                </div>
+                <table class="table">
+                    <tr>
+                        <th>
+                            @Html.DisplayNameFor(model => model.Orders.ElementAt(0).ID)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.Orders.ElementAt(0).PlacementDate)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.Orders.ElementAt(0).Total)
+                        </th>
+                    </tr>
+                    @foreach (var item in Model.Orders)
+                    {
+                        <tr>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.ID)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.PlacementDate)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Total)
+                            </td>
+                        </tr>
+                    }
+                </table>
+            </div>
+        </div>
+        <!-- /row -->
+    </div>
+    <!-- /container -->
+</div>
+<!-- /section -->

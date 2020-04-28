@@ -1,51 +1,75 @@
 ﻿<!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - Sports Store</title>
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="~/css/site.css" />
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+
+    <title>@ViewData["Title"] - SportStore</title>
+
+    <link href="https://fonts.googleapis.com/css?family=Hind:400,700" rel="stylesheet">
+
+    <link rel="stylesheet" href="~/lib/bootstrap/css/bootstrap.min.css">
+
+    <link rel="stylesheet" href="~/lib/slick-carousel/slick/slick.min.css">
+    <link rel="stylesheet" href="~/lib/slick-carousel/slick/slick-theme.min.css">
+
+    <link rel="stylesheet" href="~/lib/noUiSlider/nouislider.min.css">
+
+    <link rel="stylesheet" href="~/lib/font-awesome/css/font-awesome.min.css">
+
+    <link rel="stylesheet" href="~/eshop/css/style.css">
 </head>
 <body>
     <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+        <div id="header">
             <div class="container">
-                @if ((await authorizationService.AuthorizeAsync(User, "CustomerPolicy")).Succeeded)
-                {
-                    <a class="navbar-brand"
-                       asp-area=""
-                       asp-controller="Home"
-                       asp-action="Index">SportsStore</a>
-                }
-                else
-                {
-                    <a class="navbar-brand"
-                       asp-area="Employee"
-                       asp-controller="Home"
-                       asp-action="EmployeeIndex">SportsStore Staff</a>
-                }
-                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex flex-sm-row-reverse">
-                    <ul class="navbar-nav flex-grow-0">
-                        @*If the user is signed-in display Logout link*@
+                <div class="pull-left">
+                    <!-- Logo -->
+                    <div class="header-logo">
+                        <a class="logo"
+                           asp-area=""
+                           asp-controller="Home"
+                           asp-action="Index">Sports Store</a>
+                    </div>
+                    <!-- /Logo -->
+                    <!-- Search -->
+                    <div class="header-search">
+                        <form asp-action="Index" asp-controller="Products">
+                            <input name="SearchString" class="input search-input" type="text" placeholder="Enter your keyword">
+                            <button class="search-btn"><i class="fa fa-search"></i></button>
+                        </form>
+                    </div>
+                    <!-- /Search -->
+                </div>
+                <div class="pull-right">
+                    <ul class="header-btns">
+                        <!-- Account -->
                         @if (SignInManager.IsSignedIn(User))
                         {
-                            <li class="nav-item">
-                                <a class="nav-link text-dark"
-                                   asp-controller="Customers"
-                                   asp-action="Details"
-                                   asp-route-id="@SignInManager.UserManager.GetUserId(User)">
-                                    @User.Identity.Name
-                                </a>
-                            </li>
-                            <li class="nav-item">
+                            <li class="header-account dropdown default-dropdown">
+                                <div class="dropdown-toggle" role="button" data-toggle="dropdown" aria-expanded="true">
+                                    <div class="header-btns-icon">
+                                        <i class="fa fa-user-o"></i>
+                                    </div>
+                                    <strong class="text-uppercase">
+                                        @User.Identity.Name<i class="fa fa-caret-down"></i>
+                                    </strong>
+                                </div>
+                                <ul class="custom-menu">
+                                    <li>
+                                        <a asp-controller="Customers"
+                                           asp-action="Details"
+                                           asp-route-id="@SignInManager.UserManager.GetUserId(User)"><i class="fa fa-user-o"></i> My Account</a>
+                                    </li>
+                                    <li><a href="#"><i class="fa fa-heart-o"></i> My Wishlist</a></li>
+                                    <li>
+                                    </li>
+                                </ul>
                                 <form method="post" asp-controller="Accounts" asp-action="Logout">
                                     <button type="submit"
-                                            class="btn nav-link text-dark">
+                                            class="text-uppercase link-btn">
                                         Logout
                                     </button>
                                 </form>
@@ -53,126 +77,193 @@
                         }
                         else
                         {
-                            <li class="nav-item">
-                                <a class="nav-link" 
-                                   asp-controller="Accounts" 
-                                   asp-action="Register">
-                                    Register
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" asp-controller="Accounts" asp-action="Login">
-                                    Login
-                                </a>
-                            </li>
-                        }
-                    </ul>
-                    <ul class="navbar-nav flex-grow-1">
-                        @if ((await authorizationService.AuthorizeAsync(User, "CustomerPolicy")).Succeeded)
-                        {
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" 
-                                   asp-area=""
-                                   asp-controller="Home"
-                                   asp-action="Index">
-                                    Home
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area=""
-                                   asp-controller="Home"
-                                   asp-action="Privacy">
-                                    Privacy
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area=""
-                                   asp-controller="Home"
-                                   asp-action="About">
-                                    About
-                                </a>
-                            </li>
-                        }
-                        @if ((await authorizationService.AuthorizeAsync(User, "EmployeePolicy")).Succeeded)
-                        {
-                            <li class="nav-item">
-                                <a class="nav-link text-dark"
-                                   asp-area="Employee"
-                                   asp-controller="Products"
-                                   asp-action="Index">
-                                    Products
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link text-dark"
-                                   asp-area="Employee"
-                                   asp-controller="Orders"
-                                   asp-action="Index">
-                                    Orders
-                                </a>
-                            </li>
-                        }
-                        @if ((await authorizationService.AuthorizeAsync(User, "AdminPolicy")).Succeeded)
-                        {
-                            <li class="nav-item">
-                                <a class="nav-link text-dark"
-                                   asp-area="Employee"
-                                   asp-controller="Imports"
-                                   asp-action="Index">
-                                    Imports
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link text-dark"
-                                   asp-area="Employee"
-                                   asp-controller="Employees"
-                                   asp-action="Index">
-                                    Employees
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link text-dark"
-                                   asp-area="Employee"
-                                   asp-controller="Reports"
-                                   asp-action="Index">
-                                    Reports
-                                </a>
-                            </li>
-                            <li class="nav-item dropdown">
-                                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink"
-                                   data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-                                    Admin
-                                </a>
-                                <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-                                    <a class="dropdown-item"
-                                       asp-area="Employee" 
-                                       asp-controller="Administration"
-                                       asp-action="ListUsers">Users</a>
-                                    <a class="dropdown-item"
-                                       asp-area="Employee" 
-                                       asp-controller="Administration"
-                                       asp-action="ListRoles">Roles</a>
+                            <li class="header-account dropdown default-dropdown">
+                                <div class="header-btns-icon">
+                                    <i class="fa fa-user-o"></i>
                                 </div>
+                                <a asp-controller="Accounts"
+                                   asp-action="Login"
+                                   class="text-uppercase">Login</a> /
+                                <a asp-controller="Accounts"
+                                   asp-action="Register"
+                                   class="text-uppercase">Register</a>
                             </li>
                         }
+                        <!-- /Account -->
+                        <!-- Cart -->
+                        <li class="header-cart dropdown default-dropdown" style="width: fit-content;">
+                            @{List<ProductItem> cart = SessionHelper.GetObjectFromJson<List<ProductItem>>(HttpContextAccessor.HttpContext.Session, "cart");}
+                            <a class="dropdown-toggle" data-toggle="dropdown" aria-expanded="true">
+                                <div class="header-btns-icon" style="display:inline-block;">
+                                    <i class="fa fa-shopping-cart"></i>
+                                    <span class="qty">@(cart?.Count ?? 0)</span>
+                                </div>
+                                <div style="display:inline-block;">
+                                    <strong class="text-uppercase">My Cart:</strong>
+                                    <br />
+                                    <span>@(cart?.Sum(i => i.Product.Price * i.Quantity) ?? 0)</span>
+                                </div>
+                            </a>
+                            <div class="custom-menu">
+                                <div id="shopping-cart">
+                                    <div class="shopping-cart-list">
+                                        @if (cart != null)
+                                        {
+                                            @foreach (var item in cart)
+                                            {
+                                                <div class="product product-widget">
+                                                    @*<div class="product-thumb">
+                                                            <img src="./img/thumb-product01.jpg" alt="">
+                                                        </div>*@
+                                                    <div class="product-body">
+                                                        <h3 class="product-price">@item.Product.Price <span class="qty">x@(item.Quantity)</span></h3>
+                                                        <h2 class="product-name"><a href="#">@item.Product.Name</a></h2>
+                                                    </div>
+                                                    <button class="cancel-btn"><i class="fa fa-trash"></i></button>
+                                                </div>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <div class="product product-widget">
+                                                <h3 class="product-price">Your cart is empty</h3>
+                                            </div>
+                                        }
+                                    </div>
+                                    <div class="shopping-cart-btns">
+                                        <a asp-action="CartIndex" asp-controller="Customers" class="main-btn">View Cart</a>
+                                        <button class="primary-btn">Checkout <i class="fa fa-arrow-circle-right"></i></button>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                        <!-- /Cart -->
+                        <!-- Mobile nav toggle-->
+                        <li class="nav-toggle">
+                            <button class="nav-toggle-btn main-btn icon-btn"><i class="fa fa-bars"></i></button>
+                        </li>
+                        <!-- / Mobile nav toggle -->
                     </ul>
                 </div>
             </div>
-        </nav>
+            <!-- header -->
+        </div>
     </header>
+
+    @await Component.InvokeAsync("Categories", new { IsExpanded = ViewBag.IsExpanded })
     <div class="container">
         <main role="main" class="pb-3">
             @RenderBody()
         </main>
     </div>
 
-    <footer class="border-top footer text-muted">
+
+    <!-- FOOTER -->
+    <footer id="footer" class="section section-grey">
+        <!-- container -->
         <div class="container">
-            &copy; 2020 - Sports Store - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+            <!-- row -->
+            <div class="row">
+                <!-- footer widget -->
+                <div class="col-md-3 col-sm-6 col-xs-6">
+                    <div class="footer">
+                        <!-- footer logo -->
+                        <div class="footer-logo">
+                            <a class="logo" 
+                               asp-controller="Home" 
+                               asp-action="Index">
+                                Sports Store
+                            </a>
+                        </div>
+                        <!-- /footer logo -->
+
+                        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna</p>
+
+                        <!-- footer social -->
+                        <ul class="footer-social">
+                            <li><a href="#"><i class="fa fa-facebook"></i></a></li>
+                            <li><a href="#"><i class="fa fa-twitter"></i></a></li>
+                            <li><a href="#"><i class="fa fa-instagram"></i></a></li>
+                            <li><a href="#"><i class="fa fa-google-plus"></i></a></li>
+                            <li><a href="#"><i class="fa fa-pinterest"></i></a></li>
+                        </ul>
+                        <!-- /footer social -->
+                    </div>
+                </div>
+                <!-- /footer widget -->
+                <!-- footer widget -->
+                <div class="col-md-3 col-sm-6 col-xs-6">
+                    <div class="footer">
+                        <h3 class="footer-header">My Account</h3>
+                        <ul class="list-links">
+                            <li><a href="#">My Account</a></li>
+                            <li><a href="#">My Wishlist</a></li>
+                            <li><a href="#">Compare</a></li>
+                            <li><a href="#">Checkout</a></li>
+                            <li><a href="#">Login</a></li>
+                        </ul>
+                    </div>
+                </div>
+                <!-- /footer widget -->
+
+                <div class="clearfix visible-sm visible-xs"></div>
+
+                <!-- footer widget -->
+                <div class="col-md-3 col-sm-6 col-xs-6">
+                    <div class="footer">
+                        <h3 class="footer-header">Customer Service</h3>
+                        <ul class="list-links">
+                            <li><a href="#">About Us</a></li>
+                            <li><a href="#">Shiping & Return</a></li>
+                            <li><a href="#">Shiping Guide</a></li>
+                            <li><a href="#">FAQ</a></li>
+                        </ul>
+                    </div>
+                </div>
+                <!-- /footer widget -->
+                <!-- footer subscribe -->
+                <div class="col-md-3 col-sm-6 col-xs-6">
+                    <div class="footer">
+                        <h3 class="footer-header">Stay Connected</h3>
+                        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor.</p>
+                        <form>
+                            <div class="form-group">
+                                <input class="input" placeholder="Enter Email Address">
+                            </div>
+                            <button class="primary-btn">Join Newslatter</button>
+                        </form>
+                    </div>
+                </div>
+                <!-- /footer subscribe -->
+            </div>
+            <!-- /row -->
+            <hr>
+            <!-- row -->
+            <div class="row">
+                <div class="col-md-8 col-md-offset-2 text-center">
+                    <!-- footer copyright -->
+                    <div class="footer-copyright">
+                        <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
+                        Copyright &copy;
+                        <script>document.write(new Date().getFullYear());</script> All rights reserved | This template is made with <i class="fa fa-heart-o" aria-hidden="true"></i> by <a href="https://colorlib.com" target="_blank">Colorlib</a>
+                        <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
+                    </div>
+                    <!-- /footer copyright -->
+                </div>
+            </div>
+            <!-- /row -->
         </div>
+        <!-- /container -->
     </footer>
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- /FOOTER -->
+    <script src="~/lib/jquery/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/js/bootstrap.min.js"></script>
+    <script src="~/lib/slick-carousel/slick/slick.min.js"></script>
+    <script src="~/lib/noUiSlider/nouislider.min.js"></script>
+    <script src="~/lib/jquery-zoom/jquery.zoom.min.js"></script>
+    <script src="~/lib/jquery.imagesloaded/imagesloaded.pkgd.min.js"></script>
+    <script src="~/lib/masonry/masonry.pkgd.min.js"></script>
+    <script src="~/eshop/js/main.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     @RenderSection("Scripts", required: false)
 </body>

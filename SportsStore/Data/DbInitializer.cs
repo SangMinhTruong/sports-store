@@ -130,14 +130,14 @@ namespace SportsStore.Data
             {
                 var products = new Product[]
                 {
-                new Product { Name="Máy chạy bộ V9", Brand="Sakura", Category="Máy chạy bộ", Price=14000000},
-                new Product { Name="Tạ đơn", Brand="Brosman", Category="Tạ", Price=65000},
-                new Product { Name="Máy chạy bộ S6", Brand="Sakura", Category="Máy chạy bộ", Price=10000000},
-                new Product { Name="Bánh tạ gang", Brand="", Category="Tạ", Price=22000},
-                new Product { Name="Xà đơn", Brand="", Category="Xà", Price=350000},
-                new Product { Name="Xà kép", Brand="Thiên Trường", Category="Xà", Price=1000000},
-                new Product { Name="Bánh tạ inox", Brand="", Category="Tạ", Price=60000},
-                new Product { Name="Ghế tập tạ", Brand="Xuki", Category="Ghế tập gym", Price=3500000}
+                new Product { Name="Máy chạy bộ V9", Brand="Sakura", Category="Máy chạy bộ", Price=14000000, Stock=10},
+                new Product { Name="Tạ đơn", Brand="Brosman", Category="Tạ", Price=65000, Stock=100},
+                new Product { Name="Máy chạy bộ S6", Brand="Sakura", Category="Máy chạy bộ", Price=10000000, Stock=15},
+                new Product { Name="Bánh tạ gang", Brand="", Category="Tạ", Price=22000, Stock=200},
+                new Product { Name="Xà đơn", Brand="", Category="Xà", Price=350000, Stock=50},
+                new Product { Name="Xà kép", Brand="Thiên Trường", Category="Xà", Price=1000000, Stock=50},
+                new Product { Name="Bánh tạ inox", Brand="", Category="Tạ", Price=60000, Stock=150},
+                new Product { Name="Ghế tập tạ", Brand="Xuki", Category="Ghế tập gym", Price=3500000, Stock=60}
                 };
                 foreach (Product p in products)
                 {
@@ -151,7 +151,7 @@ namespace SportsStore.Data
                                         .Include(p => p.OrderedProducts)
                                             .ThenInclude(op => op.Order)
                                         .ToListAsync();
-                var customers = context.Customers.ToList();
+                var customers = await context.Customers.ToListAsync();
                 var order1 = new Order
                 {
                     Customer = customers.Find(c => c.Email == "CTruong@customer"),
@@ -203,6 +203,69 @@ namespace SportsStore.Data
 
                 context.Orders.Add(order1);
                 context.Orders.Add(order2);
+                context.SaveChanges();
+            }
+            if (!context.ImportOrders.Any())
+            {
+                var productsQuery = context.Products
+                                    .Include(p => p.OrderedProducts)
+                                        .ThenInclude(op => op.Order);
+                var order1 = new ImportOrder
+                {
+                    PlacementDate = DateTime.Parse("11/01/2019"),
+                    WholesalerName = "Xuki",
+                    WholesalerAddress = "ABC XYZ",
+                    WholesalerPhone = "19002222"
+                };
+                var order1Products = new List<ImportedProduct>
+                {
+                    new ImportedProduct
+                    {
+                        ImportOrder = order1,
+                        Product = await productsQuery.FirstOrDefaultAsync(p => p.ID == 4),
+                        Quantity = 100
+                    },
+                    new ImportedProduct
+                    {
+                        ImportOrder = order1,
+                        Product = await productsQuery.FirstOrDefaultAsync(p => p.ID == 1),
+                        Quantity = 50
+                    },
+                    new ImportedProduct
+                    {
+                        ImportOrder = order1,
+                        Product = await productsQuery.FirstOrDefaultAsync(p => p.ID == 5),
+                        Quantity = 100
+                    },
+                };
+                order1.ImportedProducts = order1Products;
+
+                var order2 = new ImportOrder
+                {
+                    PlacementDate = DateTime.Parse("11/25/2019"),
+                    WholesalerName = "Brooks",
+                    WholesalerAddress = "AAAA BBBB",
+                    WholesalerPhone = "19006969"
+                };
+                var order2Products = new List<ImportedProduct>
+                {
+                    new ImportedProduct
+                    {
+                        ImportOrder = order1,
+                        Product = await productsQuery.FirstOrDefaultAsync(p => p.ID == 2),
+                        Quantity = 150
+                    },
+                    new ImportedProduct
+                    {
+                        ImportOrder = order1,
+                        Product = await productsQuery.FirstOrDefaultAsync(p => p.ID == 3),
+                        Quantity = 10
+                    }
+                };
+                order2.ImportedProducts = order2Products;
+
+                context.ImportOrders.Add(order1);
+                context.ImportOrders.Add(order2);
                 context.SaveChanges();
             }
         }

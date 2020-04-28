@@ -7,6 +7,10 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using SportsStore.Models;
+using SportsStore.Helpers;
+using SportsStore.Areas.Employee.Models.ViewModels;
+using System;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace SportsStore.Areas.Employee.Controllers
 {
@@ -55,6 +59,100 @@ namespace SportsStore.Areas.Employee.Controllers
                 Claims = claims.Select(c => c.Value).ToList(),
                 Roles = roles
             };
+            return View(model);
+        }
+        public IActionResult CreateUser()
+        {
+            var roles = roleManager.Roles;
+            var selectedRoles = new Dictionary<string, bool>();
+            foreach (var role in roles)
+            {
+                selectedRoles[role.Name] = false;
+            }
+            var model = new CreateUserViewModel
+            {
+                SelectedRoles = selectedRoles
+            };
+            return View(model);
+        }
+
+        // POST: Orders/Create
+        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
+        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [HttpPost, ActionName("CreateUser")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CreateUserPost(CreateUserViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                ApplicationUser user;
+                if (model.SelectedRoles["Employee"] == true ||
+                    model.SelectedRoles["Admin"] == true)
+                {
+                    user = new SportsStore.Models.Employee
+                    {
+                        UserName = model.Email,
+                        Email = model.Email,
+                        FirstName = model.FirstName,
+                        LastName = model.LastName,
+                        Address = model.Address,
+                        HireDate = model.HireDate ?? DateTime.Now,
+                        Salary = model.Salary ?? 0
+                    };
+                }
+                else
+                {
+                    user = new Customer
+                    {
+                        UserName = model.Email,
+                        Email = model.Email,
+                        FirstName = model.FirstName,
+                        LastName = model.LastName,
+                        Address = model.Address
+                    };
+                }
+
+                var result = await userManager.CreateAsync(user, model.Password);
+
+                var userToAdd = await userManager.FindByNameAsync(model.Email);
+
+                foreach (var item in model.SelectedRoles)
+                {
+                    if (item.Value == true)
+                    {
+                        var role = await roleManager.FindByNameAsync(item.Key);
+
+                        if (role == null)
+                        {
+                            ViewBag.ErrorMessage = $"Role with name {item.Key} cannot be found";
+                            return NotFound();
+                        }
+
+
+                        result = await userManager.AddToRoleAsync(userToAdd, role.Name);
+
+                        if (!result.Succeeded)
+                        {
+                            return RedirectToAction("Error", "Home",
+                                new
+                                {
+                                    ErrorTitle = "Role Edit Error",
+                                    ErrorMessage = "An error occured while trying to update users in a role."
+                                });
+                        }
+                    }
+                }
+
+                if (result.Succeeded)
+                {
+                    return RedirectToAction("ListUsers", "Administration", new { area = "Employee" });
+                }
+
+                foreach (var error in result.Errors)
+                {
+                    ModelState.AddModelError(string.Empty, error.Description);
+                }
+            }
             return View(model);
         }
         [HttpGet]
@@ -485,6 +583,21 @@ namespace SportsStore.Areas.Employee.Controllers
                     return RedirectToAction(nameof(DeleteRole),
                         new { id, saveChangesError = true });
                 }
+            }
+        }
+        [AcceptVerbs("Get", "Post")]
+        [AllowAnonymous]
+        public async Task<IActionResult> IsEmailInUse(string email)
+        {
+            var user = await userManager.FindByEmailAsync(email);
+
+            if (user == null)
+            {
+                return Json(true);
+            }
+            else
+            {
+                return Json($"Email {email} is already in use.");
             }
         }
     }

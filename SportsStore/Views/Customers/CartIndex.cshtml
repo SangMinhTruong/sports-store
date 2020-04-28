@@ -1,60 +1,115 @@
-﻿@model IEnumerable<ProductItem>
+﻿@model IList<ProductItem>
 @{
     ViewData["Title"] = "Cart Index";
 }
-<h3>Cart Index</h3>
-<table class="table">
-</table>
-<table class="table">
-    <thead>
-        <tr>
-            <th>ID</th>
-            <th>Name</th>
-            <th>Price</th>
-            <th>Quantity</th>
-            <th>Sub Total</th>
-            <th>Remove</th>
-        </tr>
-    </thead>
-    <tbody>
-        @if (Model.Any())
-        {
-            @foreach (var item in Model)
-            {
-                <tr>
-                    <td>
-                        @Html.DisplayFor(model => item.Product.ID)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(model => item.Product.Name)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(model => item.Product.Price)
-                    </td>
-                    <td>@item.Quantity</td>
-                    <td>@(item.Product.Price * item.Quantity)</td>
-                    <td>
-                        <a asp-controller="Customers"
-                           asp-action="RemoveFromCart"
-                           asp-route-id="@item.Product.ID"
-                           asp-route-returnUrl="@ViewBag.ReturnUrl">Remove</a>
-                    </td>
-                </tr>
-            }
-            <tr>
-                <td align="right" colspan="6">Sum</td>
-                <td>
-                    @ViewBag.Total
-                </td>
-            </tr>
-        }
-    </tbody>
-</table>
 
-<a asp-controller="Customers"
-   asp-action="Checkout"
-   class="btn btn-primary">Checkout</a>
-
-<a asp-controller="Customers"
-   asp-action="ContinueShopping"
-   asp-route-returnUrl="@ViewBag.ReturnUrl">Continue Shopping</a>
+<div id="breadcrumb">
+    <div class="container">
+        <ul class="breadcrumb">
+            <li><a asp-action="Index" asp-controller="Home">Home</a></li>
+            <li class="active">Cart</li>
+        </ul>
+    </div>
+</div>
+<div class="section">
+    <div class="container">
+        <!-- row -->
+        <div class="row">
+            <form id="checkout-form" class="clearfix"
+                  asp-controller="Customers" asp-action="UpdateCart"
+                  asp-route-returnUrl="@ViewBag.ReturnUrl">
+                <div class="col-md-12">
+                    <div class="order-summary clearfix">
+                        <div class="section-title">
+                            <h3 class="title">Order Review</h3>
+                        </div>
+                        @if (Model.Any())
+                        {
+                            <table class="shopping-cart-table table">
+                                <thead>
+                                    <tr>
+                                        <th class="thumb">Product</th>
+                                        <th class="details"></th>
+                                        <th class="price text-center">Price</th>
+                                        <th class="qty text-center">Quantity</th>
+                                        <th class="total text-center">Total</th>
+                                        <th class="remove text-right"></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @for (int i = 0; i < Model.Count; i++)
+                                    {
+                                        <tr>
+                                            <td class="thumb"><img src="~/images/thumb-product01.jpg" alt=""></td>
+                                            <td class="details">
+                                                <a asp-action="Details" asp-controller="Products"
+                                                   asp-route-id="@Model[i].Product.ID">@Model[i].Product.Name</a>
+                                                <ul>
+                                                    <li><span>Brand: @Model[i].Product.Brand</span></li>
+                                                </ul>
+                                            </td>
+                                            <td class="price text-center"><strong>@Model[i].Product.Price</strong></td>
+                                            <td class="qty text-center">
+                                                <input type="hidden" asp-for="@Model[i].Product.ID" value="@Model[i].Product.ID" />
+                                                <input asp-for="@Model[i].Quantity"
+                                                       class="input product-quantity-input" type="number"
+                                                       value="@Model[i].Quantity" min="1" max="@Model[i].Product.Stock">
+                                            </td>
+                                            <td class="total text-center"><strong class="primary-color">@(Model[i].Product.Price * Model[i].Quantity)</strong></td>
+                                            <td class="remove text-right">
+                                                <a asp-controller="Customers"
+                                                   asp-action="RemoveFromCart"
+                                                   asp-route-id="@Model[i].Product.ID"
+                                                   asp-route-returnUrl="@ViewBag.ReturnUrl"><i class="fa fa-close"></i></a>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                                <tfoot>
+                                    <tr>
+                                        <th class="empty" colspan="3"></th>
+                                        <th>SUBTOTAL</th>
+                                        <th colspan="2" class="sub-total">@Model.Sum(p => p.Quantity * p.Product.Price)</th>
+                                    </tr>
+                                    <tr>
+                                        <th class="empty" colspan="3"></th>
+                                        <th>SHIPING</th>
+                                        <td colspan="2">Free Shipping</td>
+                                    </tr>
+                                    <tr>
+                                        <th class="empty" colspan="3"></th>
+                                        <th>TOTAL</th>
+                                        <th colspan="2" class="total">@Model.Sum(p => p.Quantity * p.Product.Price)</th>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                            <div class="pull-left">
+                                <a asp-controller="Customers"
+                                   asp-action="ContinueShopping"
+                                   asp-route-returnUrl="@ViewBag.ReturnUrl"
+                                   class="main-btn">Continue Shopping</a>
+                            </div>
+                            <div class="pull-right">
+                                <button type="submit" class="primary-btn" style="margin-right: 5px;">Update</button>
+                                <a asp-controller="Customers"
+                                   asp-action="Checkout"
+                                   class="primary-btn">Checkout</a>
+                            </div>
+                        }
+                        else
+                        {
+                            <h3><strong>Your cart is empty</strong></h3>
+                            <div class="pull-left">
+                                <a asp-controller="Customers"
+                                   asp-action="ContinueShopping"
+                                   asp-route-returnUrl="@ViewBag.ReturnUrl"
+                                   class="main-btn">Continue Shopping</a>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </form>
+        </div>
+        <!-- /row -->
+    </div>
+</div>

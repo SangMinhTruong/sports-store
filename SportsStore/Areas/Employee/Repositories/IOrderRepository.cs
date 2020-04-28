@@ -53,6 +53,10 @@ namespace SportsStore.Models
                     Quantity = productItem.Quantity
                 };
                 product.OrderedProducts.Add(orderedProduct);
+                if (product.Stock - productItem.Quantity >= 0)
+                    product.Stock = product.Stock - productItem.Quantity;
+                else
+                    throw new DbUpdateException();
                 orderedProducts.Add(orderedProduct);
                 _context.Update(product);
             }

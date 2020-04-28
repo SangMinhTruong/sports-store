@@ -25,7 +25,7 @@ namespace SportsStore.Data
             modelBuilder.Entity<OrderedProduct>().ToTable("OrderedProduct");
             modelBuilder.Entity<ImportOrder>().ToTable("ImportOrder");
             modelBuilder.Entity<ImportedProduct>().ToTable("ImportedProduct");
-
+            // OrderedProduct Relationship 
             modelBuilder.Entity<OrderedProduct>()
                 .HasKey(op => new { op.OrderID, op.ProductID });
 
@@ -47,6 +47,38 @@ namespace SportsStore.Data
                 .HasForeignKey(c => c.CustomerID)
                 .IsRequired(false)
                 .OnDelete(DeleteBehavior.SetNull);
+
+            // ProductReview Relationship 
+            modelBuilder.Entity<ProductReview>()
+                .HasKey(pr => new { pr.OrderID, pr.ProductID });
+
+            modelBuilder.Entity<ProductReview>()
+                .HasOne<Order>(pr => pr.Order)
+                    .WithMany(o => o.ProductReviews)
+                .HasForeignKey(pr => pr.OrderID)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<ProductReview>()
+                .HasOne<Product>(pr => pr.Product)
+                    .WithMany(p => p.ProductReviews)
+                .HasForeignKey(pr => pr.ProductID)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            // ImportedOrder Relationship 
+            modelBuilder.Entity<ImportedProduct>()
+                .HasKey(ip => new { ip.ImportOrderID, ip.ProductID });
+
+            modelBuilder.Entity<ImportedProduct>()
+                .HasOne<ImportOrder>(ip => ip.ImportOrder)
+                    .WithMany(io => io.ImportedProducts)
+                .HasForeignKey(ip => ip.ImportOrderID)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<ImportedProduct>()
+                .HasOne<Product>(ip => ip.Product)
+                    .WithMany(p => p.ImportedProducts)
+                .HasForeignKey(ip => ip.ProductID)
+                .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

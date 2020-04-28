@@ -46,7 +46,7 @@
     <thead>
         <tr>
             <th>
-                <a asp-action="Index" 
+                <a asp-action="Index"
                    asp-route-sortOrder="@ViewData["NameSortParm"]"
                    asp-route-searchString="@Model.SearchString">Name</a>
             </th>
@@ -57,9 +57,12 @@
                 Category
             </th>
             <th>
-                <a asp-action="Index" 
+                <a asp-action="Index"
                    asp-route-sortOrder="@ViewData["PriceSortParm"]"
                    asp-route-searchString="@Model.SearchString">Price</a>
+            </th>
+            <th>
+                Stock
             </th>
             <th></th>
         </tr>
@@ -79,6 +82,9 @@
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.Price)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Stock)
                 </td>
                 <td>
                     <a asp-action="Edit" asp-route-id="@item.ID">Edit</a> |

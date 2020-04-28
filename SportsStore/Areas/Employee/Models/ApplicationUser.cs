@@ -17,9 +17,8 @@ namespace SportsStore.Models
 
         [StringLength(50)]
         [RegularExpression(@"^[A-Z]+[a-zA-Z""'\s-]*$")]
-        [Display(Name = "LastName")]
+        [Display(Name = "Last Name")]
         public string LastName { get; set; }
-        public Gender? Gender { get; set; }
         public string Address { get; set; }
         public int? Age { get; set; }
         public string FullName
@@ -30,5 +29,4 @@ namespace SportsStore.Models
             }
         }
     }
-    public enum Gender { Male, Female }
 }

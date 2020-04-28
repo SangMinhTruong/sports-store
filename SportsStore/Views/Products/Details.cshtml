@@ -1,42 +1,187 @@
-﻿@model SportsStore.Models.Product
-
+﻿@model ProductDetailsViewModel
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = "Product Page";
 }
 
-<h1>Details</h1>
+<!-- BREADCRUMB -->
+<div id="breadcrumb">
+    <div class="container">
+        <ul class="breadcrumb">
+            <li><a asp-action="Index" asp-controller="Home">Home</a></li>
+            <li><a asp-action="Index" asp-controller="Products">Products</a></li>
+            <li><a asp-action="Index" asp-controller="Products"
+                   asp-route-category="@Model.Product.Category">@Model.Product.Category</a></li>
+            <li class="active">@Model.Product.Name</li>
+        </ul>
+    </div>
+</div>
+<!-- /BREADCRUMB -->
+<!-- section -->
+<div class="section">
+    <!-- container -->
+    <div class="container">
+        <!-- row -->
+        <div class="row">
+            <!--  Product Details -->
+            <div class="product product-details clearfix">
+                <div class="col-md-6">
+                    <div id="product-main-view">
+                        <div class="product-view">
+                            <img src="~/images/main-product01.jpg" alt="">
+                        </div>
+                        <div class="product-view">
+                            <img src="~/images/main-product02.jpg" alt="">
+                        </div>
+                        <div class="product-view">
+                            <img src="~/images/main-product03.jpg" alt="">
+                        </div>
+                        <div class="product-view">
+                            <img src="~/images/main-product04.jpg" alt="">
+                        </div>
+                    </div>
+                    <div id="product-view">
+                        <div class="product-view">
+                            <img src="~/images/thumb-product01.jpg" alt="">
+                        </div>
+                        <div class="product-view">
+                            <img src="~/images/thumb-product02.jpg" alt="">
+                        </div>
+                        <div class="product-view">
+                            <img src="~/images/thumb-product03.jpg" alt="">
+                        </div>
+                        <div class="product-view">
+                            <img src="~/images/thumb-product04.jpg" alt="">
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="product-body">
+                        <div class="product-label">
+                        </div>
+                        <h2 class="product-name">@Model.Product.Name</h2>
+                        <h3 class="product-price">@Model.Product.Price</h3>
+                        <p><strong>Availability:</strong> @((Model.Product.Stock > 0) ? "In stock" : "Out of stock")</p>
+                        <p><strong>Brand:</strong> @(Model.Product.Brand == "" ? "None" : Model.Product.Brand)</p>
+                        <p>
+                            Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure
+                            dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+                        </p>
 
-<div>
-    <h4>Product</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Name)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Name)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Brand)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Brand)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Category)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Category)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Price)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Price)
-        </dd>
-    </dl>
+                        <form class="product-btns"
+                              asp-action="AddToCart"
+                              asp-controller="Customers">
+                            <div class="qty-input">
+                                <span class="text-uppercase">QTY: </span>
+                                <input class="input" type="number" min="0" max="@Model.Product.Stock" asp-for="Quantity">
+                            </div>
+                            <input class="input" type="hidden" asp-for="Id" value="@Model.Product.ID" >
+                            <input class="input" type="hidden" asp-for="ReturnUrl" value="@Model.ReturnUrl">
+                            <button class="primary-btn add-to-cart" type="submit">
+                                <i class="fa fa-shopping-cart"></i> Add to Cart
+                            </button>
+                            <a class="main-btn icon-btn"><i class="fa fa-heart"></i></a>
+                            <div class="pull-right">
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <div class="col-md-12">
+                    <div class="product-tab">
+                        <ul class="tab-nav">
+                            <li class="active"><a data-toggle="tab" href="#tab1">Description</a></li>
+                            <li><a data-toggle="tab" href="#tab1">Details</a></li>
+                            <li><a data-toggle="tab" href="#tab2">Reviews (3)</a></li>
+                        </ul>
+                        <div class="tab-content">
+                            <div id="tab1" class="tab-pane fade in active">
+                                <p>
+                                    Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute
+                                    irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+                                </p>
+                            </div>
+                            <div id="tab2" class="tab-pane fade in">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="product-reviews">
+                                            <div class="single-review">
+                                                <div class="review-heading">
+                                                    <div><a href="#"><i class="fa fa-user-o"></i> John</a></div>
+                                                    <div><a href="#"><i class="fa fa-clock-o"></i> 27 DEC 2017 / 8:0 PM</a></div>
+                                                    <div class="review-rating pull-right">
+                                                        <i class="fa fa-star"></i>
+                                                        <i class="fa fa-star"></i>
+                                                        <i class="fa fa-star"></i>
+                                                        <i class="fa fa-star"></i>
+                                                        <i class="fa fa-star-o empty"></i>
+                                                    </div>
+                                                </div>
+                                                <div class="review-body">
+                                                    <p>
+                                                        Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.Duis aute
+                                                        irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
+                                                    </p>
+                                                </div>
+                                            </div>
+
+                                            <div class="single-review">
+                                                <div class="review-heading">
+                                                    <div><a href="#"><i class="fa fa-user-o"></i> John</a></div>
+                                                    <div><a href="#"><i class="fa fa-clock-o"></i> 27 DEC 2017 / 8:0 PM</a></div>
+                                                    <div class="review-rating pull-right">
+                                                        <i class="fa fa-star"></i>
+                                                        <i class="fa fa-star"></i>
+                                                        <i class="fa fa-star"></i>
+                                                        <i class="fa fa-star"></i>
+                                                        <i class="fa fa-star-o empty"></i>
+                                                    </div>
+                                                </div>
+                                                <div class="review-body">
+                                                    <p>
+                                                        Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.Duis aute
+                                                        irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
+                                                    </p>
+                                                </div>
+                                            </div>
+
+                                            <div class="single-review">
+                                                <div class="review-heading">
+                                                    <div><a href="#"><i class="fa fa-user-o"></i> John</a></div>
+                                                    <div><a href="#"><i class="fa fa-clock-o"></i> 27 DEC 2017 / 8:0 PM</a></div>
+                                                    <div class="review-rating pull-right">
+                                                        <i class="fa fa-star"></i>
+                                                        <i class="fa fa-star"></i>
+                                                        <i class="fa fa-star"></i>
+                                                        <i class="fa fa-star"></i>
+                                                        <i class="fa fa-star-o empty"></i>
+                                                    </div>
+                                                </div>
+                                                <div class="review-body">
+                                                    <p>
+                                                        Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.Duis aute
+                                                        irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
+                                                    </p>
+                                                </div>
+                                            </div>
+
+                                            <ul class="reviews-pages">
+                                                <li class="active">1</li>
+                                                <li><a href="#">2</a></li>
+                                                <li><a href="#">3</a></li>
+                                                <li><a href="#"><i class="fa fa-caret-right"></i></a></li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <!-- /Product Details -->
+        </div>
+        <!-- /row -->
+    </div>
+    <!-- /container -->
 </div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model.ID">Edit</a> |
-    <a asp-action="Index">Back to List</a>
-</div>
+<!-- /section -->

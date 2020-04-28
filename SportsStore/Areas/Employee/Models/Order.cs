@@ -34,5 +34,6 @@ namespace SportsStore.Models
         }
         public Customer Customer { get; set; }
         public ICollection<OrderedProduct> OrderedProducts { get; set; }
+        public ICollection<ProductReview> ProductReviews { get; set; }
     }
 }

@@ -12,6 +12,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using ReflectionIT.Mvc.Paging;
 using SportsStore.Data;
 using SportsStore.Models;
 
@@ -38,6 +39,11 @@ namespace SportsStore
             services.AddDefaultIdentity<ApplicationUser>()
                     .AddRoles<IdentityRole>()
                     .AddEntityFrameworkStores<StoreDbContext>();
+
+            services.AddPaging(options => {
+                options.ViewName = "Bootstrap3";
+                options.PageParameterName = "pageNumber";
+            });
 
             services.AddAuthorization(options =>
             {
@@ -74,7 +80,7 @@ namespace SportsStore
             });
 
             services.AddScoped<IOrderRepository, EFOrderRepository>();
-
+            services.AddScoped<IImportOrderRepository, EFImportOrderRepository>();
 
             services.Configure<IdentityOptions>(options =>
             {

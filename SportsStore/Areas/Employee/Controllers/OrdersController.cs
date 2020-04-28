@@ -137,6 +137,7 @@ namespace SportsStore.Areas.Employee.Controllers
 
                     var orderedProductsData = TempData.Get<IList<ProductItem>>("OrderedProducts");
                     await _orderRepository.Create(order, orderedProductsData);
+                    TempData.Put<IList<ProductItem>>("OrderedProducts", null);
                     return RedirectToAction(nameof(Index));
                 }
             }
