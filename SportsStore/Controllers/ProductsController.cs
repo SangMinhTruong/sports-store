@@ -26,6 +26,8 @@ namespace SportsStore.Controllers
             string category,
             string brand,
             string searchString,
+            decimal? curMinPrice,
+            decimal? curMaxPrice,
             int? pageNumber,
             int? pageSize)
         {
@@ -47,12 +49,40 @@ namespace SportsStore.Controllers
             {
                 products = products.Where(x => x.Category == category);
             }
+
             var filteredProducts = products;
 
             if (!string.IsNullOrEmpty(brand))
             {
                 products = products.Where(p => p.Brand.Equals(brand));
             }
+
+            var brandFilteredProducts = products;
+            decimal? minPrice = 0, maxPrice = 0;
+            if (brandFilteredProducts.Any())
+            {
+                minPrice = await brandFilteredProducts.MinAsync(p => p.Price);
+                maxPrice = await brandFilteredProducts.MaxAsync(p => p.Price);
+            }
+
+            if (curMinPrice != null)
+            {
+                products = products.Where(p => p.Price >= curMinPrice);
+            }
+            else
+            {
+                curMinPrice = await brandFilteredProducts.MinAsync(p => p.Price);
+            }
+
+            if (curMaxPrice != null)
+            {
+                products = products.Where(p => p.Price <= curMaxPrice);
+            }
+            else
+            {
+                curMaxPrice = await brandFilteredProducts.MaxAsync(p => p.Price);
+            }    
+
 
             ViewData["NameSortParm"] = String.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
             ViewData["PriceSortParm"] = sortOrder == "price_asc" ? "price_desc" : "price_asc";
@@ -95,6 +125,10 @@ namespace SportsStore.Controllers
                 SearchString = searchString,
                 SortOrder = sortOrder,
                 Brand = brand,
+                CurMinPrice = curMinPrice,
+                CurMaxPrice = curMaxPrice,
+                MinPrice = minPrice ?? 0,
+                MaxPrice = maxPrice ?? 0,
                 PageSize = pageSize ?? 6,
                 Categories = await categoryQuery.Distinct().ToListAsync(),
                 Cart = cart

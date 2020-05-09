@@ -18,6 +18,10 @@ namespace SportsStore.Models.ViewModels
         public string SortOrder { get; set; }
         public string Brand { get; set; }
         public int? PageSize { get; set; }
+        public decimal? CurMinPrice { get; set; }
+        public decimal? CurMaxPrice { get; set; }
+        public decimal? MinPrice { get; set; }
+        public decimal? MaxPrice { get; set; }
         public IList<ProductItem> Cart { get; set; }
     }
 }
