@@ -179,6 +179,24 @@ namespace SportsStore.Data
                     },
                 };
                 order1.OrderedProducts = order1Products;
+                var order1ProductReviews = new List<ProductReview>
+                {
+                    new ProductReview
+                    {
+                        Order = order1,
+                        Product = products.Find(p => p.ID == 1),
+                        Rating = 5,
+                        Description = "Very nice product."
+                    },
+                    new ProductReview
+                    {
+                        Order = order1,
+                        Product = products.Find(p => p.ID == 6),
+                        Rating = 2,
+                        Description = "Not good."
+                    }
+                };
+                order1.ProductReviews = order1ProductReviews;
                 var order2 = new Order
                 {
                     Customer = customers.Find(c => c.Email == "CTruong@customer"),
@@ -199,7 +217,25 @@ namespace SportsStore.Data
                         Quantity = 1
                     },
                 };
-                order2.OrderedProducts = order1Products;
+                order2.OrderedProducts = order2Products;
+                var order2ProductReviews = new List<ProductReview>
+                {
+                    new ProductReview
+                    {
+                        Order = order2,
+                        Product = products.Find(p => p.ID == 2),
+                        Rating = 4,
+                        Description = "Nice product."
+                    },
+                    new ProductReview
+                    {
+                        Order = order2,
+                        Product = products.Find(p => p.ID == 5),
+                        Rating = 1,
+                        Description = "Bad."
+                    }
+                };
+                order2.ProductReviews = order2ProductReviews;
 
                 context.Orders.Add(order1);
                 context.Orders.Add(order2);

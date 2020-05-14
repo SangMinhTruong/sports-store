@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
@@ -146,12 +147,27 @@ namespace SportsStore.Controllers
             return View(model);
         }
 
-        public async Task<IActionResult> Details(int? id, string returnUrl)
+        public async Task<IActionResult> Details(int? id, string returnUrl, int pageNumber = 1)
         {
-            var product = await _context.Products.FirstOrDefaultAsync(p => p.ID == id);
+            var product = await _context.Products.Include(p => p.ProductReviews)
+                                                    .ThenInclude(r => r.Order)
+                                                .FirstOrDefaultAsync(p => p.ID == id);
+
+            var productReviews = _context.ProductReviews.Include(r => r.Order)
+                                                        .Include(r => r.Product)
+                                                        .Where(r => r.ProductID == id)
+                                                        .OrderBy(r => r.DateAdded);
+            var paginatedReviews = await PagingList.CreateAsync(productReviews, 3, pageNumber);
+            paginatedReviews.Action = nameof(Details);
+            paginatedReviews.RouteValue = new RouteValueDictionary
+            {
+                { "id", id },
+                { "returnUrl", returnUrl }
+            };
             var model = new ProductDetailsViewModel
             {
                 Product = product,
+                ProductReviews = paginatedReviews,
                 Id = product.ID,
                 Quantity = 0,
                 ReturnUrl = returnUrl

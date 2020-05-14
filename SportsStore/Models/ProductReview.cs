@@ -16,6 +16,10 @@ namespace SportsStore.Models
 
         [Display(Name = "Description")]
         public string Description { get; set; }
+        [DataType(DataType.Date)]
+        [Display(Name = "Date Added")]
+        public DateTime DateAdded { get; set; }
+
         public Product Product { get; set; }
         public Order Order { get; set; }
     }

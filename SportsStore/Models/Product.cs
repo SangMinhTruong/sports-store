@@ -54,7 +54,9 @@ namespace SportsStore.Models
             {
                 if (ProductReviews != null)
                 {
-                    return Math.Round(this.ProductReviews.Average(r => r.Rating), 2);
+                    return Math.Round(this.ProductReviews
+                            .Where(r => r.Rating != 0)
+                            .Average(r => r.Rating), 2);
                 }
                 else
                     return 0;
