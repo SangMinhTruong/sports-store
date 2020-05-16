@@ -1,0 +1,109 @@
+﻿@model CreateReviewViewModel
+@{
+    ViewData["Title"] = "CreateReview";
+}
+
+<!-- BREADCRUMB -->
+<div id="breadcrumb">
+    <div class="container">
+        <ul class="breadcrumb">
+            <li><a asp-action="Index" asp-controller="Home">Home</a></li>
+            <li>
+                <a asp-controller="Customers"
+                   asp-action="Details">
+                    Customer
+                </a>
+            </li>
+            <li>
+                <a asp-controller="Customers"
+                   asp-action="OrderDetails"
+                   asp-route-id="@Model.Order.ID">
+                    Order Details
+                </a>
+            </li>
+            <li class="active">Create Review</li>
+        </ul>
+    </div>
+</div>
+
+<!-- section -->
+<div class="section">
+    <!-- container -->
+    <div class="container">
+        <!-- row -->
+        <div class="row">
+            <div class="col-md-12">
+                <div class="order-summary clearfix">
+                    <div class="section-title">
+                        <h3 class="title">Product Review</h3>
+                    </div>
+                    <div>
+                        <p><strong>Order ID:</strong> @Model.Order.ID</p>
+                        <p><strong>Placement Date:</strong> @Model.Order.PlacementDate</p>
+                    </div>
+                    <table class="shopping-cart-table table">
+                        <thead>
+                            <tr>
+                                <th class="thumb">Product</th>
+                                <th class="details"></th>
+                                <th class="price text-center">Price</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="thumb"><img src="~/images/thumb-product01.jpg" alt=""></td>
+                                <td class="details">
+                                    <a asp-action="Details"
+                                       asp-controller="Products"
+                                       asp-route-id="@Model.Product.ID">@Model.Product.Name</a>
+                                    <ul>
+                                        <li><span>Brand: @Model.Product.Brand</span></li>
+                                    </ul>
+                                </td>
+                                <td class="price text-center"><strong>@Model.Product.Price</strong></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <form class="review-form" method="post">
+                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                        <input class="input" type="hidden" asp-for="@Model.OrderID" value="@Model.Order.ID">
+                        <input class="input" type="hidden" asp-for="@Model.ProductID" value="@Model.Product.ID">
+                        <div class="form-group">
+                            <div class="input-rating">
+                                <strong class="text-uppercase">Your Rating: </strong>
+                                <div class="stars">
+                                    @for (int i = 1; i <= 5; i++)
+                                    {
+                                        if (Model.Rating == i)
+                                        {
+                                            <input type="radio" id="@("star"+i)" value="@i" asp-for="@Model.Rating"><label for="@("star"+i)"></label>
+                                        }
+                                        else
+                                        {
+                                            <input type="radio" id="@("star"+i)" value="@i" asp-for="@Model.Rating" checked="checked"><label for="@("star"+i)"></label>
+                                        }
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <textarea class="input" placeholder="Your review" asp-for="@Model.Description"></textarea>
+                        </div>
+                        <button class="primary-btn">Submit</button>
+                    </form>
+                    <div class="pull-right">
+                        <a asp-controller="Customers"
+                           asp-action="OrderDetails"
+                           asp-route-id="@Model.Order.ID"
+                           class="primary-btn" style="margin-right: 5px;">
+                            Back to Order
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- /row -->
+    </div>
+    <!-- /container -->
+</div>
+<!-- /section -->

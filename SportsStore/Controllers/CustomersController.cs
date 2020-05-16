@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Metadata;
 using Microsoft.EntityFrameworkCore;
 using SportsStore.Data;
 using SportsStore.Helpers;
@@ -197,14 +198,26 @@ namespace SportsStore.Controllers
 
             return RedirectToAction("CartIndex", "Customers", new { returnUrl });
         }
-        public async Task<IActionResult> Details(string id)
+        public async Task<IActionResult> Details()
         {
-            var users = _context.Customers
-                            .Include(c => c.Orders)
-                            .ThenInclude(o => o.OrderedProducts)
-                                .ThenInclude(op => op.Product);
-            var user = await users.FirstOrDefaultAsync(c => c.Id == id);
-            return View(user);
+            if (!signInManager.IsSignedIn(User))
+            {
+                return RedirectToAction("Error", "Home", new
+                {
+                    ErrorTitle = "Not signed in",
+                    ErrorMessage = "You are not signed in to perform this action."
+                });
+            }
+            else
+            {
+                var customerID = userManager.GetUserId(User);
+                var users = _context.Customers
+                                .Include(c => c.Orders)
+                                .ThenInclude(o => o.OrderedProducts)
+                                    .ThenInclude(op => op.Product);
+                var user = await users.FirstOrDefaultAsync(c => c.Id == customerID);
+                return View(user);
+            }
         }
         [HttpPost, ActionName("Details")]
         [ValidateAntiForgeryToken]
@@ -241,6 +254,127 @@ namespace SportsStore.Controllers
             }
             return View(customerToUpdate);
         }
+        [HttpGet]
+        public async Task<IActionResult> OrderDetails(int? id)
+        {
+            if (id == null)
+            {
+                return RedirectToAction("Error", "Home", new 
+                { 
+                    ErrorTitle = "Products information not found", 
+                    ErrorMessage = "Something happened while trying to get products information, please try again."
+                });
+            }
 
+            if (!signInManager.IsSignedIn(User))
+            {
+                return RedirectToAction("Error", "Home", new
+                {
+                    ErrorTitle = "Not signed in",
+                    ErrorMessage = "You are not signed in to perform this action."
+                });
+            }
+            else
+            {
+                var customerID = userManager.GetUserId(User);
+                var customer = await _context.Customers
+                                        .Include(c => c.Orders)
+                                            .ThenInclude(o => o.OrderedProducts)
+                                                .ThenInclude(op => op.Product)
+                                        .FirstOrDefaultAsync(c => c.Id == customerID);
+
+                var order = customer.Orders.FirstOrDefault(o => o.ID == id);
+                if (order == null)
+                {
+                    return NotFound();
+                }
+                return View(order);
+            }
+        }
+        [HttpGet]
+        public async Task<IActionResult> CreateReview(int? orderID, int? productID)
+        {
+            if (productID == null)
+            {
+                return RedirectToAction("Error", "Home", new
+                {
+                    ErrorTitle = "Product information not found",
+                    ErrorMessage = "Something happened while trying to get the product information, please try again."
+                });
+            }
+
+            if (orderID == null)
+            {
+                return RedirectToAction("Error", "Home", new
+                {
+                    ErrorTitle = "Order information not found",
+                    ErrorMessage = "Something happened while trying to get the order information, please try again."
+                });
+            }
+
+            if (!signInManager.IsSignedIn(User))
+            {
+                return RedirectToAction("Error", "Home", new
+                {
+                    ErrorTitle = "Not signed in",
+                    ErrorMessage = "You are not signed in to perform this action."
+                });
+            }
+            else
+            {
+                var customerID = userManager.GetUserId(User);
+                var customer = await _context.Customers
+                                        .Include(c => c.Orders)
+                                            .ThenInclude(o => o.OrderedProducts)
+                                                .ThenInclude(op => op.Product)
+                                        .FirstOrDefaultAsync(c => c.Id == customerID);
+
+                var order = customer.Orders.FirstOrDefault(o => o.ID == orderID);
+                var product = order.OrderedProducts.FirstOrDefault(p => p.ProductID == productID).Product;
+                CreateReviewViewModel model = new CreateReviewViewModel
+                {
+                    Product = product,
+                    Order = order,
+                };
+                return View(model);
+                
+            }
+        }
+        [HttpPost, ActionName("CreateReview")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CreateReviewPost(CreateReviewViewModel model)
+        {
+            var order = await _context.Orders.Include(o => o.OrderedProducts).ThenInclude(op => op.Product)
+                                             .FirstOrDefaultAsync(o => o.ID == model.OrderID);
+            var product = order.OrderedProducts.FirstOrDefault(op => op.ProductID == model.ProductID).Product;
+            try
+            {
+                if (ModelState.IsValid)
+                {
+                    ProductReview review = new ProductReview()
+                    {
+                        Order = order,
+                        Product = product,
+                        Rating = model.Rating,
+                        DateAdded = DateTime.Now.Date,
+                        Description = model.Description
+                    };
+
+                    _context.Add(review);
+                    await _context.SaveChangesAsync();
+                    return RedirectToAction(nameof(Details));
+                }
+            }
+            catch (DbUpdateException /* ex */)
+            {
+                //Log the error (uncomment ex variable name and write a log.
+                ModelState.AddModelError("", "Unable to save changes. " +
+                    "Try again, and if the problem persists " +
+                    "see your system administrator.");
+            }
+            model.Order = order;
+            model.Product = product;
+            return View(model);
+        }
     }
 }

@@ -1,0 +1,101 @@
+﻿@model SportsStore.Models.Order
+@{
+    ViewData["Title"] = "Order Details";
+}
+
+
+<div id="breadcrumb">
+    <div class="container">
+        <ul class="breadcrumb">
+            <li><a asp-action="Index" asp-controller="Home">Home</a></li>
+            <li>
+                <a asp-controller="Customers"
+                   asp-action="Details">
+                    Customer
+                </a>
+            </li>
+            <li class="active">Order Details</li>
+        </ul>
+    </div>
+</div>
+
+<div class="section">
+    <!-- container -->
+    <div class="container">
+        <!-- row -->
+        <div class="row">
+            <div class="col-md-12">
+                <div class="order-summary clearfix">
+                    <div class="section-title">
+                        <h3 class="title">Order Review</h3>
+                    </div>
+                    <div>
+                        <p><strong>Order ID:</strong> @Model.ID</p>
+                        <p><strong>Placement Date:</strong> @Model.PlacementDate</p>
+                    </div>
+                    <table class="shopping-cart-table table">
+                        <thead>
+                            <tr>
+                                <th class="thumb">Product</th>
+                                <th class="details"></th>
+                                <th class="price text-center">Price</th>
+                                <th class="qty text-center">Quantity</th>
+                                <th class="total text-center">Total</th>
+                                <th class="total text-center">Review</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var product in Model.OrderedProducts)
+                            {
+                                <tr>
+                                    <td class="thumb"><img src="~/images/thumb-product01.jpg" alt=""></td>
+                                    <td class="details">
+                                        <a asp-action="Details" asp-controller="Products"
+                                           asp-route-id="@product.Product.ID">@product.Product.Name</a>
+                                        <ul>
+                                            <li><span>Brand: @product.Product.Brand</span></li>
+                                        </ul>
+                                    </td>
+                                    <td class="price text-center"><strong>@product.Product.Price</strong></td>
+                                    <td class="qty text-center">
+                                        <strong>@product.Quantity</strong>
+                                    <td class="total text-center"><strong class="primary-color">@(product.Product.Price * product.Quantity)</strong></td>
+                                    <td class="price text-center">
+                                        <a asp-action="CreateReview" 
+                                           asp-controller="Customers"
+                                           asp-route-orderID="@Model.ID"
+                                           asp-route-productID="@product.ProductID">
+                                            <i class="fa fa-edit"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <th class="empty" colspan="3"></th>
+                                <th>TOTAL</th>
+                                <th colspan="2" class="total">@Model.OrderedProducts.Sum(p => p.Quantity * p.Product.Price)</th>
+                            </tr>
+                        </tfoot>
+                    </table>
+                    <div class="pull-right">
+                        <a asp-controller="Customers"
+                           asp-action="Details"
+                           class="primary-btn" style="margin-right: 5px;">
+                            Back to Account
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- /row -->
+    </div>
+    <!-- /container -->
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
+
+
