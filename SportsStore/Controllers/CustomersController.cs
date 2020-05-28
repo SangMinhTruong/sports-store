@@ -331,11 +331,18 @@ namespace SportsStore.Controllers
 
                 var order = customer.Orders.FirstOrDefault(o => o.ID == orderID);
                 var product = order.OrderedProducts.FirstOrDefault(p => p.ProductID == productID).Product;
+                var review = await _context.ProductReviews.FirstOrDefaultAsync(r => r.OrderID == order.ID && r.ProductID == product.ID);
                 CreateReviewViewModel model = new CreateReviewViewModel
                 {
                     Product = product,
                     Order = order,
                 };
+
+                if (review != null)
+                {
+                    model.Rating = review.Rating;
+                    model.Description = review.Description;
+                }
                 return View(model);
                 
             }
@@ -351,16 +358,29 @@ namespace SportsStore.Controllers
             {
                 if (ModelState.IsValid)
                 {
-                    ProductReview review = new ProductReview()
+                    ProductReview review = await _context.ProductReviews.FirstOrDefaultAsync(r => r.OrderID == order.ID && r.ProductID == product.ID);
+                    if (review == null)
                     {
-                        Order = order,
-                        Product = product,
-                        Rating = model.Rating,
-                        DateAdded = DateTime.Now.Date,
-                        Description = model.Description
-                    };
+                        review = new ProductReview()
+                        {
+                            Order = order,
+                            Product = product,
+                            Rating = model.Rating,
+                            DateAdded = DateTime.Now.Date,
+                            Description = model.Description
+                        };
 
-                    _context.Add(review);
+                        _context.Add(review);
+                    }
+                    else
+                    {
+                        review.Rating = model.Rating;
+                        review.DateAdded = DateTime.Now.Date;
+                        review.Description = model.Description;
+
+                        _context.Update(review);
+                    }
+
                     await _context.SaveChangesAsync();
                     return RedirectToAction(nameof(Details));
                 }

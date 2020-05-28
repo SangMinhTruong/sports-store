@@ -40,5 +40,5 @@
   <ItemGroup>
     <None Include="wwwroot\eshop\js\main.js" />
   </ItemGroup>
-
+  
 </Project>
