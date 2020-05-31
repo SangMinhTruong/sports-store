@@ -51,7 +51,7 @@ namespace SportsStore.Controllers
             throw new Exception("Problem saving changes");
         }
 
-        [HttpDelete]
+        [HttpDelete("[controller]/[action]/{id?}")]
         public async Task<Object> DeletePhoto(string id)
         {
             var photo = _context.Photos.FirstOrDefault(x => x.Id == id);
@@ -72,6 +72,7 @@ namespace SportsStore.Controllers
             throw new Exception("Problem saving changes");
         }
 
+        [HttpPut("[controller]/[action]/{id?}")]
         public async Task<Object> SetMain(string id)
         {
             var photo = _context.Photos.FirstOrDefault(x => x.Id == id);

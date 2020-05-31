@@ -6,13 +6,14 @@
 <link href="https://unpkg.com/dropzone/dist/dropzone.css" rel="stylesheet"/>
 <script src="https://unpkg.com/dropzone"></script>
 <link href="https://unpkg.com/cropperjs/dist/cropper.css" rel="stylesheet"/>
- <script src="https://unpkg.com/cropperjs"></script>
+<script src="https://unpkg.com/cropperjs"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <h1>Edit</h1>
 
 <h4>Product</h4>
 <hr />
 <div class="row">
-    <div class="col-md-4">
+    <div class="col-md-6">
         <form asp-action="Edit">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="ID" />
@@ -44,17 +45,42 @@
             <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-primary" />
             </div>
-            <div class="dropzone" id="myDropzone"></div>
+             <div class="dropzone" id="myDropzone"></div>
+             <button id="doneUploading" type="button" class="btn btn-success" style="margin-top:15px">Finish Upload</button>
         </form>
     </div>
-</div>
-
+    <div class="col-md-12" style="margin-top: 25px">
+        <div class="row text-center" style="display: flex; flex-wrap: wrap;">
+                @if (Model.Photos.Any())
+                { 
+                    @foreach (var photo in Model.Photos)
+                    {
+                    <div class="col-md-2 col-sm-4" style="margin-bottom: 25px;">
+                        <div class="card">
+                            <img src="@photo.Url" class="card-img-top">
+                            <div class="card-body">
+                                <p class="card-text" hidden>@photo.Id</p>
+                                 <div class="btn-group" role="group" aria-label="Basic example">
+                                    <button id="@photo.Id" type="button" class="btn btn-danger Delete">Delete</button>
+                                    @if(!photo.IsMain){
+                                        <button id="@photo.Id" type="button" class="btn btn-primary Main">Main</button>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    }
+                }
+             </div>
+        </div>
+    </div>
 <div>
     <a asp-action="Index">Back to List</a>
 </div>
 
 
-<script>
+<script type="text/javascript">
+var $newJ = jQuery.noConflict(true);
 Dropzone.options.myDropzone = {
  url: '/Photo/AddPhoto/'+@Model.ID,
  method: 'post',
@@ -117,6 +143,57 @@ Dropzone.options.myDropzone = {
   
   }
 };
+
+
+
+
+
+$newJ(function(){
+    //Finish upload button
+    $("#doneUploading").click(function(){
+        location.reload();  
+    })
+
+    //Delete Button
+    $(".Delete").click(function (){
+        var id = $newJ(this).attr("id");
+        console.log(id);
+        $newJ.ajax({  
+                url: '/Photo/DeletePhoto/'+id, 
+                method: "DELETE",   
+                //data: JSON.stringify(id),
+                //dataType: "json",  
+                //contentType: "application/json; charset=utf-8",  
+                success: function () {  
+                   console.log("Data has been delete successfully."); 
+                   location.reload();  
+                },  
+                error: function () {  
+                    console.log("Error while deleting data");  
+                }  
+            }); 
+    });
+    //Set Main Button
+     $(".Main").click(function (){
+        var id = $newJ(this).attr("id");
+        console.log(id);
+        $newJ.ajax({  
+                url: '/Photo/SetMain/'+id, 
+                method: "PUT",   
+                //data: JSON.stringify(id),
+                //dataType: "json",  
+                //contentType: "application/json; charset=utf-8",  
+                success: function () {  
+                   console.log("Data has been saved successfully."); 
+                   location.reload();  
+                },  
+                error: function () {  
+                    console.log("Error while saving data");  
+                }  
+            }); 
+    });
+});
+
 </script>
 
 

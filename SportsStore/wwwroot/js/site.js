@@ -101,4 +101,3 @@ $(function () {
         $(this).closest("td").next().find("strong").text((price * quantity).toFixed(2));
     });
 });
-<link href="https://unpkg.com/dropzone/dist/dropzone.css" rel="stylesheet" />

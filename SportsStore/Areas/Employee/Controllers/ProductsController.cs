@@ -140,7 +140,7 @@ namespace SportsStore.Areas.Employee.Controllers
                 return NotFound();
             }
 
-            var product = await _context.Products.FindAsync(id);
+            var product = await _context.Products.Include(product => product.Photos).FirstOrDefaultAsync(p => p.ID == id);
             if (product == null)
             {
                 return NotFound();
