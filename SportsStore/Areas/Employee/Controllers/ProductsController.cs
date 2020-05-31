@@ -31,12 +31,12 @@ namespace SportsStore.Areas.Employee.Controllers
             int? pageNumber)
         {
             // Use LINQ to get list of genres.
-            IQueryable<string> categoryQuery =  from p in _context.Products
-                                                orderby p.Category
-                                                select p.Category;
+            IQueryable<string> categoryQuery = from p in _context.Products
+                                               orderby p.Category
+                                               select p.Category;
 
             var products = from p in _context.Products
-                         select p;
+                           select p;
 
             if (!string.IsNullOrEmpty(searchString))
             {
@@ -164,9 +164,9 @@ namespace SportsStore.Areas.Employee.Controllers
             if (await TryUpdateModelAsync<Product>(
                     productToUpdate,
                     "",
-                    p => p.Name, 
-                    p => p.Brand, 
-                    p => p.Category, 
+                    p => p.Name,
+                    p => p.Brand,
+                    p => p.Category,
                     p => p.Price,
                     p => p.ImportPrice
                 ))
@@ -240,10 +240,10 @@ namespace SportsStore.Areas.Employee.Controllers
                 string message = "An error occured while trying to delete the product.\n" +
                     "It is most likely that the product is still in some orders. " +
                     "Please try to delete the orders first and then the product.";
-                return RedirectToAction("Error", "Home", new 
-                { 
-                    errorTitle = title, 
-                    errorMessage = message 
+                return RedirectToAction("Error", "Home", new
+                {
+                    errorTitle = title,
+                    errorMessage = message
                 });
             }
         }
