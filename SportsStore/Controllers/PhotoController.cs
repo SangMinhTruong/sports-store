@@ -29,7 +29,7 @@ namespace SportsStore.Controllers
             var inputProduct = await _context.Products.FirstOrDefaultAsync(m => m.ID == id);
             if (inputProduct == null)
             {
-                throw new Exception("Product not found");
+                return JsonConvert.SerializeObject(new { Error = "Product not found" });
             }
             var photoUploadResult = _photoAccessor.AddPhoto(file);
             var photo = new Photo
@@ -48,7 +48,7 @@ namespace SportsStore.Controllers
             var isSuccess = await _context.SaveChangesAsync() > 0;
             if (isSuccess) return JsonConvert.SerializeObject(new { Id = photo.Id, Url = photo.Url, ProductId = id });
 
-            throw new Exception("Problem saving changes");
+            return JsonConvert.SerializeObject(new { Error = "Problem saving changes" });
         }
 
         [HttpDelete("[controller]/[action]/{id?}")]
@@ -57,14 +57,14 @@ namespace SportsStore.Controllers
             var photo = _context.Photos.FirstOrDefault(x => x.Id == id);
 
             if (photo == null)
-                throw new Exception("Photo not found");
+                return JsonConvert.SerializeObject(new { Error = "Photo not found" });
             if (photo.IsMain)
-                throw new Exception("You cannot delete your main photo");
+                return JsonConvert.SerializeObject(new { Error = "Can not delete main photo" });
 
             var result = _photoAccessor.DeletePhoto(photo.Id);
             _context.Photos.Remove(photo);
             if (result == null)
-                throw new Exception("Problem deleting the photo");
+                return JsonConvert.SerializeObject(new { Error = "Problem deleting photo" });
             //return result
             var isSuccess = await _context.SaveChangesAsync() > 0;
             if (isSuccess) return JsonConvert.SerializeObject(new { Result = "Delete photo success" });
@@ -78,7 +78,7 @@ namespace SportsStore.Controllers
             var photo = _context.Photos.FirstOrDefault(x => x.Id == id);
 
             if (photo == null)
-                throw new Exception("Photo not found");
+                return JsonConvert.SerializeObject(new { Error = "Photo not found" });
             List<Photo> listPhoto = _context.Photos.Where(x => x.ProductId == photo.ProductId).ToList();
             var currentMain = listPhoto.Find(x => x.IsMain == true);
             currentMain.IsMain = false;
@@ -86,7 +86,7 @@ namespace SportsStore.Controllers
             var isSuccess = await _context.SaveChangesAsync() > 0;
             if (isSuccess) return JsonConvert.SerializeObject(new { Result = "Set main photo success" });
 
-            throw new Exception("Problem saving changes");
+            return JsonConvert.SerializeObject(new { Error = "Problem saving changes" });
         }
     }
 }

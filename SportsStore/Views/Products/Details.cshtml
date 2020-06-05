@@ -29,7 +29,29 @@
             <!--  Product Details -->
             <div class="product product-details clearfix">
                 <div class="col-md-6">
-                    <div id="product-main-view">
+                    @if (Model.Product.Photos.Any())
+                { 
+                     <div id="product-main-view">
+                        @foreach (var photo in Model.Product.Photos)
+                        {
+                    
+                        <div class="product-view">
+                            <img id="@photo.Id" src="@photo.Url" alt="">
+                        </div>
+                        }
+                    </div>
+                     <div id="product-view">
+                        @foreach (var photo in Model.Product.Photos)
+                        {
+                    
+                        <div class="product-view">
+                            <img id="@photo.Id" src="@photo.Url" alt="">
+                        </div>
+                        }
+                    </div>
+                }
+                else{
+                  <div id="product-main-view">
                         <div class="product-view">
                             <img src="~/images/main-product01.jpg" alt="">
                         </div>
@@ -57,7 +79,8 @@
                         <div class="product-view">
                             <img src="~/images/thumb-product04.jpg" alt="">
                         </div>
-                    </div>
+                    </div>   
+                }     
                 </div>
                 <div class="col-md-6">
                     <div class="product-body">
