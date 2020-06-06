@@ -89,6 +89,8 @@ $(function () {
     // init Masonry
     var $container = $('.grid-products').masonry({
         // options
+        columnWidth: 270,
+        isFitWidth: true,
         itemSelector: '.product-item'
     });
 
