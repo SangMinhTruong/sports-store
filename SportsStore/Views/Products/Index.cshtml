@@ -191,7 +191,14 @@
                                            asp-route-returnUrl="@Context.Request.Path">
                                             <i class="fa fa-search-plus"></i>Details
                                         </a>
-                                        <img src="~/images/product01.jpg" alt="">
+                                        @if(@product.Photos.Any())
+                                        {
+                                             var mainPhoto = @product.Photos.Where(p=>p.IsMain).FirstOrDefault();
+                                             <img src="@mainPhoto.Url" class="img-thumbnail" alt="">
+                                        }
+                                        else{
+                                            <img src="~/images/product01.jpg" alt="">
+                                        }
                                     </div>
                                     <div class="product-body">
                                         <h3 class="product-price">@Html.DisplayFor(model => product.Price)</h3>

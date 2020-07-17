@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Threading.Tasks;
+using SportsStore.Models.Photos;
 
 namespace SportsStore.Models
 {
@@ -66,6 +67,7 @@ namespace SportsStore.Models
         public ICollection<ProductReview> ProductReviews { get; set; }
         public ICollection<OrderedProduct> OrderedProducts { get; set; }
         public ICollection<ImportedProduct> ImportedProducts { get; set; }
+        public ICollection<Photo> Photos { get; set; }
 
     }
 }

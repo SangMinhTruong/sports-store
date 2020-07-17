@@ -82,7 +82,7 @@ namespace SportsStore.Controllers
             else
             {
                 curMaxPrice = await brandFilteredProducts.MaxAsync(p => p.Price);
-            }    
+            }
 
 
             ViewData["NameSortParm"] = String.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
@@ -118,9 +118,17 @@ namespace SportsStore.Controllers
                 { "searchString", searchString },
                 { "pageSize", pageSize },
             };
+
+            //Add Photo to product
+            List<Product> finalFilteredProducts = new List<Product>();
+            foreach (Product tempProduct in filteredProducts)
+            {
+                var product = await _context.Products.Include(p => p.Photos).FirstOrDefaultAsync(p => p.ID == tempProduct.ID);
+                finalFilteredProducts.Add(product);
+            }
             var model = new ProductIndexViewModel()
             {
-                ProductsAllFiltered = await filteredProducts.ToListAsync(),
+                ProductsAllFiltered = finalFilteredProducts,
                 PaginatedProducts = paginatedProducts,
                 Category = category,
                 SearchString = searchString,
@@ -149,7 +157,7 @@ namespace SportsStore.Controllers
 
         public async Task<IActionResult> Details(int? id, string returnUrl, int pageNumber = 1)
         {
-            var product = await _context.Products.Include(p => p.ProductReviews)
+            var product = await _context.Products.Include(p => p.Photos).Include(p => p.ProductReviews)
                                                     .ThenInclude(r => r.Order)
                                                 .FirstOrDefaultAsync(p => p.ID == id);
 

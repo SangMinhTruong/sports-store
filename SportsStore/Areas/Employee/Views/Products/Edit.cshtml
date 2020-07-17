@@ -3,13 +3,17 @@
 @{
     ViewData["Title"] = "Edit";
 }
-
+<link href="https://unpkg.com/dropzone/dist/dropzone.css" rel="stylesheet"/>
+<script src="https://unpkg.com/dropzone"></script>
+<link href="https://unpkg.com/cropperjs/dist/cropper.css" rel="stylesheet"/>
+<script src="https://unpkg.com/cropperjs"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <h1>Edit</h1>
 
 <h4>Product</h4>
 <hr />
 <div class="row">
-    <div class="col-md-4">
+    <div class="col-md-6">
         <form asp-action="Edit">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="ID" />
@@ -41,13 +45,193 @@
             <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-primary" />
             </div>
+             <div class="dropzone" id="myDropzone"></div>
+             <button id="doneUploading" type="button" class="btn btn-success" style="margin-top:15px">Finish Upload</button>
         </form>
     </div>
-</div>
-
+    <div class="col-md-12" style="margin-top: 25px">
+        <div class="row text-center" style="display: flex; flex-wrap: wrap;">
+                @if (Model.Photos.Any())
+                { 
+                    @foreach (var photo in Model.Photos)
+                    {
+                    <div class="col-md-2 col-sm-4" style="margin-bottom: 25px;">
+                        <div class="card">
+                            <img src="@photo.Url" class="card-img-top">
+                            <div class="card-body">
+                                <p class="card-text" hidden>@photo.Id</p>
+                                 <div class="btn-group" role="group" aria-label="Basic example">
+                                    <button id="@photo.Id" type="button" class="btn btn-danger Delete">Delete</button>
+                                    @if(!photo.IsMain){
+                                        <button id="@photo.Id" type="button" class="btn btn-primary Main">Main</button>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    }
+                }
+             </div>
+        </div>
+    </div>
+    <div class="toast mt-3" id="mytoastr">
+            <div id="myToastrbody" class="toast-body alert-danger">
+            </div>
+    </div>
 <div>
     <a asp-action="Index">Back to List</a>
 </div>
+
+
+<script type="text/javascript">
+var $newJ = jQuery.noConflict(true);
+Dropzone.options.myDropzone = { 
+    url: '/Photo/AddPhoto/'+@Model.ID,
+    method: 'post',
+    init: function() {
+        thisDropzone = this;
+        this.on("success", function(file, response) {
+            console.log(response);
+        });
+    },
+    transformFile: function(file, done) { 
+        // Create Dropzone reference for use in confirm button click handler
+    var myDropZone = this;
+        // Create the image editor overlay
+    var editor = document.createElement('div');
+    editor.style.position = 'fixed';
+    editor.style.left = 0;
+    editor.style.right = 0;
+    editor.style.top = 0;
+    editor.style.bottom = 0;
+    editor.style.zIndex = 9999;
+    editor.style.backgroundColor = '#000';
+    document.body.appendChild(editor);
+    // Create confirm button at the top left of the viewport
+    var buttonConfirm = document.createElement('button');
+    buttonConfirm.style.position = 'absolute';
+    buttonConfirm.style.left = '10px';
+    buttonConfirm.style.top = '10px';
+    buttonConfirm.style.zIndex = 9999;
+    buttonConfirm.textContent = 'Confirm';
+    editor.appendChild(buttonConfirm);
+    buttonConfirm.addEventListener('click', function() {
+        // Get the canvas with image data from Cropper.js
+        var canvas = cropper.getCroppedCanvas({
+        width: 256,
+        height: 256
+        });
+        // Turn the canvas into a Blob (file object without a name)
+        canvas.toBlob(function(blob) {
+            // Create a new Dropzone file thumbnail
+        myDropZone.createThumbnail(
+            blob,
+            myDropZone.options.thumbnailWidth,
+            myDropZone.options.thumbnailHeight,
+            myDropZone.options.thumbnailMethod,
+            false, 
+            function(dataURL) {
+            
+            // Update the Dropzone file thumbnail
+            myDropZone.emit('thumbnail', file, dataURL);
+            // Return the file to Dropzone
+            done(blob);
+        });
+        // Return the file to Dropzone
+        done(blob);
+    });
+        // Remove the editor from the view
+        document.body.removeChild(editor);
+    });
+    // Create an image node for Cropper.js
+    var image = new Image();
+    image.src = URL.createObjectURL(file);
+    editor.appendChild(image);
+    
+    // Create Cropper.js
+    var cropper = new Cropper(image, { aspectRatio: 1 });
+  }
+};
+
+
+
+$newJ(function(){
+    $(document).ready(function () {
+                $('#mytoastr').toast({ delay: 2000 });
+            });
+
+    //OnSuccessUploading
+    $('#myDropzone').on('success', function(file, response) {
+        console.log(response);
+        console.log(file);
+    });
+
+    //Finish upload button
+    $("#doneUploading").click(function(){
+        location.reload();  
+    })
+
+    //Delete Button
+    $(".Delete").click(function (){
+        var id = $newJ(this).attr("id");
+        //console.log(id);
+        $newJ.ajax({  
+                url: '/Photo/DeletePhoto/'+id, 
+                method: "DELETE",   
+                //data: JSON.stringify(id),
+                //dataType: "json",  
+                //contentType: "application/json; charset=utf-8",  
+                success: function (data) {  
+                    const obj = JSON.parse(data);
+                    if(obj.hasOwnProperty('Error'))
+                    {
+                        //console.log(obj);
+                        $('#myToastrbody').text(obj.Error);
+                        $('#mytoastr').toast('show');
+                    }
+                    else{
+                        console.log("Data has been delete successfully."); 
+                        location.reload();  
+                    }    
+                },  
+                error: function () {  
+                    $('#myToastrbody').text("Error while deleting data");
+                    $('#mytoastr').toast('show');
+                }  
+            }); 
+    });
+    //Set Main Button
+     $(".Main").click(function (){
+        var id = $newJ(this).attr("id");
+        //console.log(id);
+        $newJ.ajax({  
+                url: '/Photo/SetMain/'+id, 
+                method: "PUT",   
+                //data: JSON.stringify(id),
+                //dataType: "json",  
+                //contentType: "application/json; charset=utf-8",  
+                success: function (data) {  
+                    const obj = JSON.parse(data);
+                    if(obj.hasOwnProperty('Error'))
+                    {
+                        //console.log(obj);
+                        $('#myToastrbody').text(obj.Error);
+                        $('#mytoastr').toast('show');
+                    }
+                    else{
+                        console.log("Data saving successfully"); 
+                        location.reload();  
+                    }                  
+                },  
+                error: function () {  
+                    $('#myToastrbody').text("Error while saving data");
+                    $('#mytoastr').toast('show');
+                }  
+            }); 
+    });
+});
+</script>
+
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}

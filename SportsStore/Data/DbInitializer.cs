@@ -35,7 +35,7 @@ namespace SportsStore.Data
                 if (results.Any(r => !r.Succeeded))
                     throw new Exception("Error Seeding Database");
             }
-            
+
             if (!context.Employees.Any())
             {
                 if (await userManager.FindByEmailAsync("admin@admin") == null)
@@ -200,7 +200,7 @@ namespace SportsStore.Data
                 var order2 = new Order
                 {
                     Customer = customers.Find(c => c.Email == "CTruong@customer"),
-                    PlacementDate = DateTime.Parse("09/21/2019")
+                    PlacementDate = DateTime.Parse("21/09/2019")
                 };
                 var order2Products = new List<OrderedProduct>
                 {
@@ -278,7 +278,7 @@ namespace SportsStore.Data
 
                 var order2 = new ImportOrder
                 {
-                    PlacementDate = DateTime.Parse("11/25/2019"),
+                    PlacementDate = DateTime.Parse("25/11/2019"),
                     WholesalerName = "Brooks",
                     WholesalerAddress = "AAAA BBBB",
                     WholesalerPhone = "19006969"

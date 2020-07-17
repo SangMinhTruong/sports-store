@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using System.Linq;
+using SportsStore.Models.Photos;
 
 namespace SportsStore.Data
 {
@@ -18,6 +19,7 @@ namespace SportsStore.Data
         public DbSet<ImportedProduct> ImportedProducts { get; set; }
         public DbSet<Employee> Employees { get; set; }
         public DbSet<Customer> Customers { get; set; }
+        public DbSet<Photo> Photos { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -26,6 +28,7 @@ namespace SportsStore.Data
             modelBuilder.Entity<OrderedProduct>().ToTable("OrderedProduct");
             modelBuilder.Entity<ImportOrder>().ToTable("ImportOrder");
             modelBuilder.Entity<ImportedProduct>().ToTable("ImportedProduct");
+            modelBuilder.Entity<Photo>().ToTable("Photo");
             // OrderedProduct Relationship 
             modelBuilder.Entity<OrderedProduct>()
                 .HasKey(op => new { op.OrderID, op.ProductID });
@@ -80,6 +83,12 @@ namespace SportsStore.Data
                     .WithMany(p => p.ImportedProducts)
                 .HasForeignKey(ip => ip.ProductID)
                 .OnDelete(DeleteBehavior.Restrict);
+            //Photo RelationShip
+            modelBuilder.Entity<Photo>()
+                .HasOne(p => p.product)
+                .WithMany(ph => ph.Photos)
+                .HasForeignKey(ip => ip.ProductId)
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

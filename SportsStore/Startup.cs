@@ -1,21 +1,17 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.UI;
-using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using ReflectionIT.Mvc.Paging;
 using SportsStore.Data;
+using SportsStore.Helpers.Photos;
+using SportsStore.Interfaces;
 using SportsStore.Models;
-
+using SportsStore.Models.Photos;
 namespace SportsStore
 {
     public class Startup
@@ -31,16 +27,19 @@ namespace SportsStore
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllersWithViews()
-                    .AddSessionStateTempDataProvider(); ;
+                    .AddSessionStateTempDataProvider();
 
             services.AddDbContext<StoreDbContext>(options =>
-                options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
-            
+            {
+                options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"));
+            });
+
             services.AddDefaultIdentity<ApplicationUser>()
                     .AddRoles<IdentityRole>()
                     .AddEntityFrameworkStores<StoreDbContext>();
 
-            services.AddPaging(options => {
+            services.AddPaging(options =>
+            {
                 options.ViewName = "Bootstrap3";
                 options.PageParameterName = "pageNumber";
             });
@@ -49,13 +48,13 @@ namespace SportsStore
             {
                 options.AddPolicy
                 (
-                    "AdminPolicy", 
+                    "AdminPolicy",
                     policy => policy.RequireRole("Admin")
                 );
                 options.AddPolicy
                 (
                     "EmployeePolicy",
-                    policy => policy.RequireAssertion(context => 
+                    policy => policy.RequireAssertion(context =>
                         context.User.IsInRole("Admin") ||
                         context.User.IsInRole("Employee")
                     )
@@ -81,6 +80,7 @@ namespace SportsStore
 
             services.AddScoped<IOrderRepository, EFOrderRepository>();
             services.AddScoped<IImportOrderRepository, EFImportOrderRepository>();
+            services.AddScoped<IPhotoAccessor, PhotoAccessor>();
 
             services.Configure<IdentityOptions>(options =>
             {
