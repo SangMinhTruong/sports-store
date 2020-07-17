@@ -100,4 +100,5 @@ $(function () {
         var quantity = parseInt($(this).val());
         $(this).closest("td").next().find("strong").text((price * quantity).toFixed(2));
     });
+
 });

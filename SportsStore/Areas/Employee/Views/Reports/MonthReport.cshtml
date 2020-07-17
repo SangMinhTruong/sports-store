@@ -1,0 +1,104 @@
+﻿@model SportsStore.Areas.Employee.Models.ViewModels.MonthReportViewModel
+
+@{
+    ViewData["Title"] = "Month Report";
+}
+<div class="card mt-3 mb-3">
+    <div class="card-body">
+        <h2 class="card-title">Monthly Report</h2>
+        <h5 class="card-subtitle mb-3 text-muted">@Model.DateInput.ToString("MMMM yyyy")</h5>
+        <div class="row">
+            <div class="col-4">Revenue</div>
+            <div class="col-4">Expenses</div>
+            <div class="col-4">Income</div>
+        </div>
+        <div class="row">
+            <div class="col-4">
+                <span class="font-weight-bolder" style="font-size: 30px;">@Model.Revenue.ToString("C0", CultureInfo.GetCultureInfo("vi"))</span>
+            </div>
+            <div class="col-4">
+                <span class="font-weight-bolder" style="font-size: 30px;">@Model.Expenses.ToString("C0", CultureInfo.GetCultureInfo("vi"))</span>
+            </div>
+            @if (@Model.Income > 0)
+            {
+                <div class="col-4">
+                    <span class="font-weight-bolder text-success" style="font-size: 30px;">@Model.Income.ToString("C0", CultureInfo.GetCultureInfo("vi"))</span>
+                </div>
+            }
+            else
+            {
+                <div class="col-4">
+                    <span class="font-weight-bolder text-danger" style="font-size: 30px;">@Model.Income.ToString("C0", CultureInfo.GetCultureInfo("vi"))</span>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+<div class="main-card mb-3 card">
+    <div class="card-body">
+        <h5 class="card-title">Orders</h5>
+        <div class="table-responsive">
+            <table id="orders_table" class="table table-striped table-bordered" style="width:100%">
+                <thead>
+                    <tr>
+                        <th>@Html.DisplayNameFor(model => model.OrdersList[0].ID)</th>
+                        <th>@Html.DisplayNameFor(model => model.OrdersList[0].PlacementDate)</th>
+                        <th>@Html.DisplayNameFor(model => model.OrdersList[0].Total)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.OrdersList)
+                    {
+                        <tr>
+                            <td>
+                                @Html.DisplayFor(model => item.ID)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(model => item.PlacementDate)
+                            </td>
+                            <td>
+                                @item.Total.ToString("C0", CultureInfo.GetCultureInfo("vi"))
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<div class="main-card mb-2 card">
+    <div class="card-body">
+        <h5 class="card-title">Import Orders</h5>
+        <div class="table-responsive">
+            <table id="imports_table" class="table table-striped table-bordered" style="width:100%">
+                <thead>
+                    <tr>
+                        <th>@Html.DisplayNameFor(model => model.ImportOrdersList[0].ID)</th>
+                        <th>@Html.DisplayNameFor(model => model.ImportOrdersList[0].PlacementDate)</th>
+                        <th>@Html.DisplayNameFor(model => model.ImportOrdersList[0].Total)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.ImportOrdersList)
+                    {
+                        <tr>
+                            <td>
+                                @Html.DisplayFor(model => item.ID)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(model => item.PlacementDate)
+                            </td>
+                            <td>
+                                @item.Total.ToString("C0", CultureInfo.GetCultureInfo("vi"))
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<a asp-area="Employee" asp-controller="Reports" asp-action="Index"
+   class="btn btn-primary">
+    Return
+</a>
