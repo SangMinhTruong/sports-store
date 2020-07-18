@@ -89,7 +89,8 @@ $(function () {
     // init Masonry
     var $container = $('.grid-products').masonry({
         // options
-        itemSelector: '.product-item'
+        itemSelector: '.product-item',
+        percentPosition: true,
     });
 
     $container.imagesLoaded(function () {

@@ -16,4 +16,7 @@
 
     $('#orders_table').DataTable();
     $('#imports_table').DataTable();
+
+    $.fn.dataTable.moment('MMMM');
+    $('#year_table').DataTable();
 });

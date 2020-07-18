@@ -926,6 +926,7 @@ textarea.input {
   margin-bottom: 15px;
   -webkit-transition: 0.3s all;
   transition: 0.3s all;
+  width: 33.33%;
 }
 
 .product.product-single:hover {
@@ -941,8 +942,9 @@ textarea.input {
   margin-bottom: 15px;
 }
 
-.product.product-single .product-thumb>img {
-  width: 100%;
+.product.product-single .product-thumb > img {
+    max-width: 100%;
+    height: auto;
 }
 
 .product.product-single .product-thumb:after {

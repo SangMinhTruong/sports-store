@@ -55,5 +55,38 @@ namespace SportsStore.Areas.Employee.Controllers
             };
             return View(model);
         }
+        public async Task<IActionResult> YearReport(string dateInput)
+        {
+            List<MonthReportViewModel> model = new List<MonthReportViewModel>();
+            for (int month = 1; month <= 12; month++)
+            {
+                DateTime curMonth = DateTime.ParseExact(month + "/" + dateInput, "M/yyyy", CultureInfo.InvariantCulture); ;
+                List<Order> orders = await _context.Orders
+                                           .Include(p => p.OrderedProducts)
+                                               .ThenInclude(o => o.Product)
+                                           .Where(o => o.PlacementDate.Month == curMonth.Month && o.PlacementDate.Year == curMonth.Year)
+                                           .ToListAsync();
+                List<ImportOrder> importOrders = await _context.ImportOrders
+                                                        .Include(p => p.ImportedProducts)
+                                                            .ThenInclude(o => o.Product)
+                                                        .Where(io => io.PlacementDate.Month == curMonth.Month && io.PlacementDate.Year == curMonth.Year)
+                                                        .ToListAsync();
+                decimal revenue = orders.Sum(o => o.OrderedProducts.Sum(op => op.Product.Price * op.Quantity));
+                decimal expenses = importOrders.Sum(io => io.ImportedProducts.Sum(ip => ip.Product.ImportPrice * ip.Quantity));
+
+                MonthReportViewModel monthReport = new MonthReportViewModel
+                {
+                    DateInput = curMonth,
+                    Revenue = revenue,
+                    Expenses = expenses,
+                    Income = revenue - expenses,
+                    OrdersList = orders,
+                    ImportOrdersList = importOrders,
+                };
+                model.Add(monthReport);
+            }
+            
+            return View(model);
+        }
     }
 }

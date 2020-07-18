@@ -42,6 +42,10 @@
     {
       "library": "datatables@1.10.21",
       "destination": "wwwroot/lib/datatables/"
+    },
+    {
+      "library": "moment.js@2.8.4",
+      "destination": "wwwroot/lib/moment.js/"
     }
   ]
 }

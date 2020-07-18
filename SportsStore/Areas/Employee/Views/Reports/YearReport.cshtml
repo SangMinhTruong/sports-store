@@ -1,0 +1,76 @@
+﻿@model IEnumerable<SportsStore.Areas.Employee.Models.ViewModels.MonthReportViewModel>
+
+@{
+    ViewData["Title"] = "Month Report";
+}
+<div class="card mt-3 mb-3">
+    <div class="card-body">
+        <h2 class="card-title">Yearly Report</h2>
+        <h5 class="card-subtitle mb-3 text-muted">@Model.ElementAt(0).DateInput.ToString("yyyy")</h5>
+        <div class="row">
+            <div class="col-4">Revenue</div>
+            <div class="col-4">Expenses</div>
+            <div class="col-4">Income</div>
+        </div>
+        <div class="row">
+            <div class="col-4">
+                <span class="font-weight-bolder" style="font-size: 30px;">@Model.Sum(m => m.Revenue).ToString("C0", CultureInfo.GetCultureInfo("vi"))</span>
+            </div>
+            <div class="col-4">
+                <span class="font-weight-bolder" style="font-size: 30px;">@Model.Sum(m => m.Expenses).ToString("C0", CultureInfo.GetCultureInfo("vi"))</span>
+            </div>
+            @if (@Model.Sum(m => m.Income) > 0)
+            {
+                <div class="col-4">
+                    <span class="font-weight-bolder text-success" style="font-size: 30px;">@Model.Sum(m => m.Income).ToString("C0", CultureInfo.GetCultureInfo("vi"))</span>
+                </div>
+            }
+            else
+            {
+                <div class="col-4">
+                    <span class="font-weight-bolder text-danger" style="font-size: 30px;">@Model.Sum(m => m.Income).ToString("C0", CultureInfo.GetCultureInfo("vi"))</span>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+<div class="main-card mb-3 card">
+    <div class="card-body">
+        <h5 class="card-title">Orders</h5>
+        <div class="table-responsive">
+            <table id="year_table" class="table table-striped table-bordered" style="width:100%">
+                <thead>
+                    <tr>
+                        <th>Month</th>
+                        <th>@Html.DisplayNameFor(model => model.Revenue)</th>
+                        <th>@Html.DisplayNameFor(model => model.Expenses)</th>
+                        <th>@Html.DisplayNameFor(model => model.Income)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var month in Model)
+                    {
+                        <tr>
+                            <td>
+                                @month.DateInput.ToString("MMMM")
+                            </td>
+                            <td>
+                                @month.Revenue.ToString("C0", CultureInfo.GetCultureInfo("vi"))
+                            </td>
+                            <td>
+                                @month.Expenses.ToString("C0", CultureInfo.GetCultureInfo("vi"))
+                            </td>
+                            <td>
+                                @month.Income.ToString("C0", CultureInfo.GetCultureInfo("vi"))
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<a asp-area="Employee" asp-controller="Reports" asp-action="Index"
+   class="btn btn-primary">
+    Return
+</a>
