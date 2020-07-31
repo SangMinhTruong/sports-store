@@ -1340,6 +1340,10 @@ textarea.input {
 .product-view>img {
   width: 100%;
 }
+.zoomImg {
+    width: 750px !important;
+    height: 750px !important;
+}
 
 /*----------------------------*\
 	Product details

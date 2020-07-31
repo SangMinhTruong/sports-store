@@ -209,8 +209,8 @@
                                                asp-route-returnUrl="@Context.Request.Path">@product.Name</a>
                                         </h2>
                                         <div class="product-btns">
-                                            <a class="main-btn icon-btn"><i class="fa fa-heart"></i></a>
-                                            <a class="main-btn icon-btn"><i class="fa fa-exchange"></i></a>
+                                            @*<a class="main-btn icon-btn"><i class="fa fa-heart"></i></a>
+                                            <a class="main-btn icon-btn"><i class="fa fa-exchange"></i></a>*@
                                             <a class="primary-btn add-to-cart"
                                                asp-action="AddToCart"
                                                asp-controller="Customers"
@@ -234,19 +234,6 @@
                 <!-- /STORE -->
                 <!-- store bottom filter -->
                 <div class="store-filter clearfix">
-                    <div class="pull-left">
-                        <form class="sort-filter"
-                              asp-controller="Products" asp-action="Index" method="get">
-                            <span class="text-uppercase">Sort By:</span>
-                            <input type="hidden" asp-for="PageSize" />
-                            <select class="input" asp-for="SortOrder" onchange="this.form.submit()">
-                                <option value="name_asc">Name Ascending</option>
-                                <option value="name_desc">Name Descending</option>
-                                <option value="price_asc">Price Ascending</option>
-                                <option value="price_desc">Price Descending</option>
-                            </select>
-                        </form>
-                    </div>
                     <div class="pull-right">
                         <form class="page-filter"
                               asp-controller="Products" asp-action="Index" method="get">
